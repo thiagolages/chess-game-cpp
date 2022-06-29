@@ -84,6 +84,15 @@ void Game::renderPieces() {
 		whiteKnights[i]->render();
 		blackKnights[i]->render();
 	}
+
+	Bishop* whiteBishops[maxMiddlePieces], * blackBishops[maxMiddlePieces];
+	for (int i = 0; i < maxMiddlePieces; i++) {
+		whiteBishops[i] = new Bishop(PieceColor::WHITE, rend);
+		blackBishops[i] = new Bishop(PieceColor::BLACK, rend);
+
+		whiteBishops[i]->render();
+		blackBishops[i]->render();
+	}
 }
 
 void Game::render() {
