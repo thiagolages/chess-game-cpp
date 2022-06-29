@@ -23,7 +23,8 @@ void ChessPiece::render() {
 			std::cout << "couldnt load " << filename << std::endl;
 			cout << IMG_GetError() << endl;
 		}
-
+		// enhance the quality of the texture
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 		texture = SDL_CreateTextureFromSurface(rend, image);
 
 		SDL_RenderCopy(rend, texture, srcRect, dstRect);

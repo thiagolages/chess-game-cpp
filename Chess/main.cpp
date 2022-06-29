@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("error initializing SDL: %s\n", SDL_GetError());
 	}
-	SDL_Window* window = SDL_CreateWindow("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 1000, 0);
+	SDL_Window* window = SDL_CreateWindow("Chess - by Thiago Lages (@thiagolages)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, CANVAS_WIDTH, CANVAS_HEIGHT, 0);
 
 	// triggers the program that controls your graphics hardware and sets flags
 	Uint32 render_flags = SDL_RENDERER_ACCELERATED;
@@ -54,17 +54,17 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < 8; i++) {
 		whitePawns[i] = new ChessPiece(rend, "images/pieces/wp.png", NULL,
 			new SDL_Rect{
-			i * SCREEN_WIDTH / 8,
-			6 * SCREEN_HEIGHT / 8,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT / 8 });
+			i * CANVAS_WIDTH / 8,
+			6 * CANVAS_HEIGHT / 8,
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT / 8 });
 		
 		blackPawns[i] = new ChessPiece(rend, "images/pieces/bp.png", NULL,
 			new SDL_Rect{ 
-			i*SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT  / 8,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT  / 8 });
+			i*CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT  / 8,
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT  / 8 });
 		
 		whitePawns[i]->render();
 		blackPawns[i]->render();		
@@ -73,45 +73,45 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < 2; i++) {
 		whiteRooks[i] = new ChessPiece(rend, "images/pieces/wr.png", NULL,
 			new SDL_Rect{
-			i*7 * SCREEN_WIDTH / 8,
-			7 * SCREEN_HEIGHT / 8,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT / 8 });
+			i*7 * CANVAS_WIDTH / 8,
+			7 * CANVAS_HEIGHT / 8,
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT / 8 });
 		
 		blackRooks[i] = new ChessPiece(rend, "images/pieces/br.png", NULL,
 			new SDL_Rect{
-			i * 7 * SCREEN_WIDTH / 8,
+			i * 7 * CANVAS_WIDTH / 8,
 			0,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT / 8 });
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT / 8 });
 
 		whiteKnights[i] = new ChessPiece(rend, "images/pieces/wn.png", NULL,
 			new SDL_Rect{
-			((i*5)+1) * SCREEN_WIDTH / 8,
-			7 * SCREEN_HEIGHT / 8,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT / 8 });
+			((i*5)+1) * CANVAS_WIDTH / 8,
+			7 * CANVAS_HEIGHT / 8,
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT / 8 });
 		
 		blackKnights[i] = new ChessPiece(rend, "images/pieces/bn.png", NULL,
 			new SDL_Rect{
-			((i * 5) + 1) * SCREEN_WIDTH / 8,
+			((i * 5) + 1) * CANVAS_WIDTH / 8,
 			0,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT / 8 });
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT / 8 });
 
 		whiteBishops[i] = new ChessPiece(rend, "images/pieces/wb.png", NULL,
 			new SDL_Rect{
-			((i * 3) + 2) * SCREEN_WIDTH / 8,
-			7 * SCREEN_HEIGHT / 8,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT / 8 });
+			((i * 3) + 2) * CANVAS_WIDTH / 8,
+			7 * CANVAS_HEIGHT / 8,
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT / 8 });
 
 		blackBishops[i] = new ChessPiece(rend, "images/pieces/bb.png", NULL,
 			new SDL_Rect{
-			((i * 3) + 2) * SCREEN_WIDTH / 8,
+			((i * 3) + 2) * CANVAS_WIDTH / 8,
 			0,
-			SCREEN_WIDTH / 8,
-			SCREEN_HEIGHT / 8 });
+			CANVAS_WIDTH / 8,
+			CANVAS_HEIGHT / 8 });
 
 		whiteRooks[i]->render();
 		blackRooks[i]->render();
@@ -124,31 +124,31 @@ int main(int argc, char* argv[])
 
 	whiteQueen = new ChessPiece(rend, "images/pieces/wq.png", NULL,
 		new SDL_Rect{
-		3 * SCREEN_WIDTH / 8,
-		7 * SCREEN_HEIGHT / 8,
-		SCREEN_WIDTH / 8,
-		SCREEN_HEIGHT / 8 });
+		3 * CANVAS_WIDTH / 8,
+		7 * CANVAS_HEIGHT / 8,
+		CANVAS_WIDTH / 8,
+		CANVAS_HEIGHT / 8 });
 
 	blackQueen = new ChessPiece(rend, "images/pieces/bq.png", NULL,
 		new SDL_Rect{
-		3 * SCREEN_WIDTH / 8,
+		3 * CANVAS_WIDTH / 8,
 		0,
-		SCREEN_WIDTH / 8,
-		SCREEN_HEIGHT / 8 });
+		CANVAS_WIDTH / 8,
+		CANVAS_HEIGHT / 8 });
 
 	whiteKing = new ChessPiece(rend, "images/pieces/wk.png", NULL,
 		new SDL_Rect{
-		4 * SCREEN_WIDTH / 8,
-		7 * SCREEN_HEIGHT / 8,
-		SCREEN_WIDTH / 8,
-		SCREEN_HEIGHT / 8 });
+		4 * CANVAS_WIDTH / 8,
+		7 * CANVAS_HEIGHT / 8,
+		CANVAS_WIDTH / 8,
+		CANVAS_HEIGHT / 8 });
 
 	blackKing = new ChessPiece(rend, "images/pieces/bk.png", NULL,
 		new SDL_Rect{
-		4 * SCREEN_WIDTH / 8,
+		4 * CANVAS_WIDTH / 8,
 		0,
-		SCREEN_WIDTH / 8,
-		SCREEN_HEIGHT / 8 });
+		CANVAS_WIDTH / 8,
+		CANVAS_HEIGHT / 8 });
 
 	whiteQueen->render();
 	blackQueen->render();
@@ -167,6 +167,10 @@ int main(int argc, char* argv[])
 
 			case SDL_QUIT:
 				// handling of close button
+				close = true;
+				break;
+			case SDLK_ESCAPE:
+				// handling of 'ESC'
 				close = true;
 				break;
 			}
@@ -223,10 +227,10 @@ void renderBackground(SDL_Renderer* rend)
 				SDL_SetRenderDrawColor(rend, 155, 103, 60, 255);
 			}
 			white = !white;
-			SDL_Rect rectangle ={ i * SCREEN_WIDTH / 8,
-								  j * SCREEN_HEIGHT / 8,
-								  SCREEN_WIDTH / 8,
-								  SCREEN_HEIGHT / 8 };
+			SDL_Rect rectangle ={ i * CANVAS_WIDTH / 8,
+								  j * CANVAS_HEIGHT / 8,
+								  CANVAS_WIDTH / 8,
+								  CANVAS_HEIGHT / 8 };
 			SDL_RenderFillRect(rend, &rectangle);
 		}
 		white = !white;
@@ -285,10 +289,10 @@ void main2() {
 
 		// let us control our image position
 		// so that we can move it with our keyboard.
-		SDL_Rect dest = { SCREEN_WIDTH / 8 ,
-					  SCREEN_HEIGHT / 8 ,
-					  SCREEN_WIDTH / 8,
-					  SCREEN_HEIGHT / 8 };
+		SDL_Rect dest = { CANVAS_WIDTH / 8 ,
+					  CANVAS_HEIGHT / 8 ,
+					  CANVAS_WIDTH / 8,
+					  CANVAS_HEIGHT / 8 };
 
 		// connects our texture with dest to control position
 		SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
@@ -374,10 +378,10 @@ void main2() {
 			/**********************/
 			SDL_Rect src = { 0, 0, 60, 60 };
 
-			SDL_Rect dest = { SCREEN_WIDTH / 8 ,
-							  SCREEN_HEIGHT / 8 ,
-							  SCREEN_WIDTH / 8,
-							  SCREEN_HEIGHT / 8 };
+			SDL_Rect dest = { CANVAS_WIDTH / 8 ,
+							  CANVAS_HEIGHT / 8 ,
+							  CANVAS_WIDTH / 8,
+							  CANVAS_HEIGHT / 8 };
 			SDL_RenderCopy(rend, tex, &src, &dest);
 			SDL_RenderPresent(rend);
 			SDL_UpdateWindowSurface(win);
