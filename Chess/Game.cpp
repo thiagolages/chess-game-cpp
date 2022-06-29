@@ -75,6 +75,15 @@ void Game::renderPieces() {
 		whiteRooks[i]->render();
 		blackRooks[i]->render();
 	}
+
+	Knight* whiteKnights[maxMiddlePieces], * blackKnights[maxMiddlePieces];
+	for (int i = 0; i < maxMiddlePieces; i++) {
+		whiteKnights[i] = new Knight(PieceColor::WHITE, rend);
+		blackKnights[i] = new Knight(PieceColor::BLACK, rend);
+
+		whiteKnights[i]->render();
+		blackKnights[i]->render();
+	}
 }
 
 void Game::render() {
