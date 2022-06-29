@@ -93,6 +93,15 @@ void Game::renderPieces() {
 		whiteBishops[i]->render();
 		blackBishops[i]->render();
 	}
+
+	Queen *whiteQueen, *blackQueen;
+	
+	whiteQueen = new Queen(PieceColor::WHITE, rend);
+	blackQueen = new Queen(PieceColor::BLACK, rend);
+
+	whiteQueen->render();
+	blackQueen->render();
+	
 }
 
 void Game::render() {
