@@ -101,6 +101,14 @@ void Game::renderPieces() {
 
 	whiteQueen->render();
 	blackQueen->render();
+
+	King* whiteKing, * blackKing;
+
+	whiteKing = new King(PieceColor::WHITE, rend);
+	blackKing = new King(PieceColor::BLACK, rend);
+
+	whiteKing->render();
+	blackKing->render();
 	
 }
 
