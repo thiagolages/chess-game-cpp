@@ -6,7 +6,7 @@
 #include "Utils.h"
 
 
-ChessPiece::ChessPiece() : rend(nullptr), srcRect(nullptr), dstRect(nullptr),
+ChessPiece::ChessPiece() : srcRect(nullptr), dstRect(nullptr),
 texture(nullptr), image_surface(nullptr), imgFilename(""), color(PieceColor::NONE)
 {	
 	cout << "ChessPiece() default constructor" << endl;

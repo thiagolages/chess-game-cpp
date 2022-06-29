@@ -33,6 +33,7 @@ protected:
 	SDL_Surface		*image_surface;
 	string			 imgFilename;
 	PieceColor		 color;
+	Position		 initialPos;
 
 	//string imgFileExtension;
 	

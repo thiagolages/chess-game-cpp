@@ -148,6 +148,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AllChessPieces.h" />
     <ClInclude Include="Bishop.h" />
     <ClInclude Include="ChessPiece.h" />
     <ClInclude Include="Utils.h" />

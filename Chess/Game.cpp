@@ -2,7 +2,7 @@
 #include <SDL.h>
 
 #include "Utils.h"
-#include "Pawn.h"
+#include "AllChessPieces.h"
 #include "Game.h"
 
 using namespace std;
@@ -44,7 +44,7 @@ void Game::gameSDL_init() {
 	Uint32 render_flags = SDL_RENDERER_ACCELERATED;
 
 	// creates a renderer to render our images
-	this->rend = SDL_CreateRenderer(window, -1, render_flags);
+	rend = SDL_CreateRenderer(window, -1, render_flags);
 
 }
 
@@ -56,13 +56,24 @@ void  Game::renderBoard() {
 }
 
 void Game::renderPieces() {
-	Pawn *whitePawns[8], *blackPawns[8];
-	for (int i = 0; i < 8; i++) {
+	const int maxPawns = 8;
+	Pawn *whitePawns[maxPawns], *blackPawns[maxPawns];
+	for (int i = 0; i < maxPawns; i++) {
 		whitePawns[i] = new Pawn(PieceColor::WHITE, rend);
 		blackPawns[i] = new Pawn(PieceColor::BLACK, rend);
 
 		whitePawns[i]->render();
 		blackPawns[i]->render();
+	}
+
+	const int maxMiddlePieces = 2;
+	Rook* whiteRooks[maxMiddlePieces], * blackRooks[maxMiddlePieces];
+	for (int i = 0; i < maxMiddlePieces; i++) {
+		whiteRooks[i] = new Rook(PieceColor::WHITE, rend);
+		blackRooks[i] = new Rook(PieceColor::BLACK, rend);
+
+		whiteRooks[i]->render();
+		blackRooks[i]->render();
 	}
 }
 

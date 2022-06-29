@@ -11,44 +11,34 @@ Pawn::~Pawn() {
 
 }
 
-Pawn::Pawn(PieceColor color, SDL_Renderer* rend, Position initialPos, PieceSize size, string colorLetter, string pieceLetter): 
-	initialPos(initialPos), size(size)
+Pawn::Pawn(PieceColor color, SDL_Renderer* rend, Position initialPos, PieceSize size, string colorLetter, string pieceLetter) 
 {
 	this->rend = rend;
 	this->color = color;
+	this->initialPos = initialPos;
+	this->extension = ".png";
+	this->pieceLetter = "p";
+	this->colorLetter = (this->color == PieceColor::WHITE ? "w" : "b");
+	this->imgFilename = IMG_PIECES_DIR + this->colorLetter + this->pieceLetter + extension;
 
-	cout << "rend inside Pawn() == nullptr? " << (rend == nullptr ? "yes" : "no") << endl;
-	cout << "calling pawn(color, render) constructor" << endl;
-	if (color != PieceColor::WHITE && color != PieceColor::BLACK) {
+	if (this->color != PieceColor::WHITE && this->color != PieceColor::BLACK) {
 		cerr << "Wrong color passed to Pawn constructor !" << endl;
 	}
-	extension = ".png";
-	pieceLetter = "p";
-	colorLetter = (color == PieceColor::WHITE ? "w" : "b");
-	imgFilename = IMG_PIECES_DIR + colorLetter + pieceLetter + extension;
+			
+	int counter	= this->color == PieceColor::WHITE ? whitePawnCounter : blackPawnCounter;	// get correct pawn counter to infere correct position
+	int yRow	= this->color == PieceColor::WHITE ?	6 : 1;								// spawn pawns on 7nd or 2th row (indexes 6 or 1)
+
+	this->initialPos.x	= counter * CANVAS_WIDTH / 8;
+	this->initialPos.y	=  yRow   * CANVAS_HEIGHT/8;
+
+	this->srcRect = nullptr; // to select all contents of the src image
 	
-
-	// get correct pawn counter to infere correct position
-	int counter		= color == PieceColor::WHITE ? whitePawnCounter : blackPawnCounter;
-	// spawn pawns on 7nd or 2th row (indexes 6 or 1)
-	int yRow = color == PieceColor::WHITE ? 6 : 1;
-
-	initialPos.x	= counter * CANVAS_WIDTH / 8;
-	initialPos.y	=  yRow   * CANVAS_HEIGHT/8;
-	size.w = CANVAS_WIDTH / 8;
-	size.h = CANVAS_HEIGHT / 8;
-
-	srcRect = nullptr;
-	//dstRect = nullptr;
-	dstRect = new SDL_Rect{
-			initialPos.x,
-			initialPos.y,
-			size.w,
-			size.h };
+	this->dstRect = new SDL_Rect{
+			this->initialPos.x,
+			this->initialPos.y,
+			pieceSize.w,
+			pieceSize.h };
 
 	// increment number of created pawns
-	color == PieceColor::WHITE ? Pawn::whitePawnCounter++ :	Pawn::blackPawnCounter++;
-	cout << "imgFileName inside Pawn(...) = " << imgFilename << endl;
-	cout << "inside Pawn(...)" << endl;
-	cout << "srcRect = " << srcRect << ", dstRect = " << dstRect << endl;
+	this->color == PieceColor::WHITE ? Pawn::whitePawnCounter++ :	Pawn::blackPawnCounter++;
 }
