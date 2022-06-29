@@ -4,15 +4,16 @@
 #include <iostream>
 
 #include <filesystem>
+#include "ChessPiece.h"
+#include "Constants.h"
 
 using namespace std;
 
-void renderImage(SDL_Renderer* rend, string filename);
+void renderImage(SDL_Renderer* rend, string filename, SDL_Rect* srcRect=NULL, SDL_Rect* dstRect=NULL);
 void renderBackground(SDL_Renderer*);
 void main2();
 void main3();
-const int SCREEN_WIDTH  = 1000;
-const int SCREEN_HEIGHT = 1000;
+
 
 int main(int argc, char* argv[])
 {
@@ -37,8 +38,123 @@ int main(int argc, char* argv[])
 	SDL_RenderClear(rend);
 
 	//renderBackground(rend);
-	string filename = "images/boards/board.jpg";
-	renderImage(rend, filename);
+	string board_filename = "images/boards/board.jpg";
+	ChessPiece board = ChessPiece(rend, "images/boards/board.png");
+
+	board.render();
+	//renderImage(rend, board_filename);
+
+	ChessPiece *whitePawns[8], *blackPawns[8];
+	ChessPiece *whiteKnights[2], *blackKnights[2];
+	ChessPiece *whiteBishops[2], *blackBishops[2];
+	ChessPiece *whiteRooks  [2], *blackRooks  [2];
+	ChessPiece *whiteQueen, *blackQueen;
+	ChessPiece *whiteKing , *blackKing;
+
+	for (int i = 0; i < 8; i++) {
+		whitePawns[i] = new ChessPiece(rend, "images/pieces/wp.png", NULL,
+			new SDL_Rect{
+			i * SCREEN_WIDTH / 8,
+			6 * SCREEN_HEIGHT / 8,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT / 8 });
+		
+		blackPawns[i] = new ChessPiece(rend, "images/pieces/bp.png", NULL,
+			new SDL_Rect{ 
+			i*SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT  / 8,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT  / 8 });
+		
+		whitePawns[i]->render();
+		blackPawns[i]->render();		
+	}
+
+	for (int i = 0; i < 2; i++) {
+		whiteRooks[i] = new ChessPiece(rend, "images/pieces/wr.png", NULL,
+			new SDL_Rect{
+			i*7 * SCREEN_WIDTH / 8,
+			7 * SCREEN_HEIGHT / 8,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT / 8 });
+		
+		blackRooks[i] = new ChessPiece(rend, "images/pieces/br.png", NULL,
+			new SDL_Rect{
+			i * 7 * SCREEN_WIDTH / 8,
+			0,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT / 8 });
+
+		whiteKnights[i] = new ChessPiece(rend, "images/pieces/wn.png", NULL,
+			new SDL_Rect{
+			((i*5)+1) * SCREEN_WIDTH / 8,
+			7 * SCREEN_HEIGHT / 8,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT / 8 });
+		
+		blackKnights[i] = new ChessPiece(rend, "images/pieces/bn.png", NULL,
+			new SDL_Rect{
+			((i * 5) + 1) * SCREEN_WIDTH / 8,
+			0,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT / 8 });
+
+		whiteBishops[i] = new ChessPiece(rend, "images/pieces/wb.png", NULL,
+			new SDL_Rect{
+			((i * 3) + 2) * SCREEN_WIDTH / 8,
+			7 * SCREEN_HEIGHT / 8,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT / 8 });
+
+		blackBishops[i] = new ChessPiece(rend, "images/pieces/bb.png", NULL,
+			new SDL_Rect{
+			((i * 3) + 2) * SCREEN_WIDTH / 8,
+			0,
+			SCREEN_WIDTH / 8,
+			SCREEN_HEIGHT / 8 });
+
+		whiteRooks[i]->render();
+		blackRooks[i]->render();
+		whiteKnights[i]->render();
+		blackKnights[i]->render();
+		whiteBishops[i]->render();
+		blackBishops[i]->render();
+	}
+
+
+	whiteQueen = new ChessPiece(rend, "images/pieces/wq.png", NULL,
+		new SDL_Rect{
+		3 * SCREEN_WIDTH / 8,
+		7 * SCREEN_HEIGHT / 8,
+		SCREEN_WIDTH / 8,
+		SCREEN_HEIGHT / 8 });
+
+	blackQueen = new ChessPiece(rend, "images/pieces/bq.png", NULL,
+		new SDL_Rect{
+		3 * SCREEN_WIDTH / 8,
+		0,
+		SCREEN_WIDTH / 8,
+		SCREEN_HEIGHT / 8 });
+
+	whiteKing = new ChessPiece(rend, "images/pieces/wk.png", NULL,
+		new SDL_Rect{
+		4 * SCREEN_WIDTH / 8,
+		7 * SCREEN_HEIGHT / 8,
+		SCREEN_WIDTH / 8,
+		SCREEN_HEIGHT / 8 });
+
+	blackKing = new ChessPiece(rend, "images/pieces/bk.png", NULL,
+		new SDL_Rect{
+		4 * SCREEN_WIDTH / 8,
+		0,
+		SCREEN_WIDTH / 8,
+		SCREEN_HEIGHT / 8 });
+
+	whiteQueen->render();
+	blackQueen->render();
+	whiteKing->render();
+	blackKing->render();
+
 
 	SDL_RenderPresent(rend);
 
@@ -72,27 +188,25 @@ int main(int argc, char* argv[])
 
 	// close SDL
 	SDL_Quit();
+
+	for (int i = 0;i < 8;i++) {
+		delete whitePawns[i];
+		delete blackPawns[i];
+	}
+	for (int i = 0;i < 2;i++) {
+		delete whiteKnights[i];
+		delete blackKnights[i];
+		delete whiteBishops[i];
+		delete blackBishops[i];
+		delete whiteRooks[i];
+		delete blackRooks[i];
+	}
+	delete whiteQueen;
+	delete blackQueen;
+	delete whiteKing;
+	delete blackKing;
 	
 	return 0;
-
-}
-
-void renderImage(SDL_Renderer* rend, string filename) {
-
-	SDL_Surface* image = IMG_Load(filename.c_str());
-
-	if (image == NULL) {
-		std::cout << "couldnt load " << filename << std::endl;
-		cout << IMG_GetError() << endl;
-	}
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(rend, image);
-
-	// loads image to our graphics hardware memory.
-	SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, image);
-
-	SDL_RenderCopy(rend, texture, NULL, NULL);
-	SDL_RenderPresent(rend);
 
 }
 
