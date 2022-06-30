@@ -1,18 +1,18 @@
-#pragma once
 #ifndef ROOK_H
 #define ROOK_H
 
-#include "ChessPiece.h"
+#include "Piece.h"
 #include <string>
 
-class Rook : public ChessPiece {
+class Rook : public Piece {
 
 public:
-	Rook(PieceColor color = PieceColor::NONE, SDL_Renderer* rend = nullptr, Position initialPos = Position{ 0,0 }, PieceSize size = PieceSize{ 0,0 }, string colorLetter = "", string pieceLetter = "");
+	Rook(ChessElementColor color = ChessElementColor::NONE, string name="Rook");
 	~Rook();
-	static int whiteRookCounter, blackRookCounter; // to count number of created rooks and infere its position
-	string colorLetter;
-	string pieceLetter;
-	string extension;
+
+private:
+	static int whiteRookCounter, blackRookCounter; // to count number of created bishops and infere its position
+	inline static string whiteRookFilename = IMG_PIECES_DIR+"wr.png";
+	inline static string blackRookFilename = IMG_PIECES_DIR+"br.png";
 };
 #endif // !ROOK_H

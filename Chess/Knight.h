@@ -1,18 +1,18 @@
-#pragma once
 #ifndef KNIGHT_H
 #define KNIGHT_H
 
-#include "ChessPiece.h"
+#include "Piece.h"
 #include <string>
 
-class Knight : public ChessPiece {
+class Knight : public Piece {
 
 public:
-	Knight(PieceColor color = PieceColor::NONE, SDL_Renderer* rend = nullptr, Position initialPos = Position{ 0,0 }, PieceSize size = PieceSize{ 0,0 }, string colorLetter = "", string pieceLetter = "");
+	Knight(ChessElementColor color = ChessElementColor::NONE, string name="Knight");
 	~Knight();
-	static int whiteKnightCounter, blackKnightCounter; // to count number of created Knights and infere its position
-	string colorLetter;
-	string pieceLetter;
-	string extension;
+
+private:
+	static int whiteKnightCounter, blackKnightCounter; // to count number of created bishops and infere its position
+	inline static string whiteKnightFilename = IMG_PIECES_DIR+"wn.png";
+	inline static string blackKnightFilename = IMG_PIECES_DIR+"bn.png";
 };
 #endif // !KNIGHT_H

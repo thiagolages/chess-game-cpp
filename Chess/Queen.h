@@ -1,17 +1,17 @@
-#pragma once
 #ifndef QUEEN_H
 #define QUEEN_H
 
-#include "ChessPiece.h"
+#include "Piece.h"
 #include <string>
 
-class Queen : public ChessPiece {
+class Queen : public Piece {
 
 public:
-	Queen(PieceColor color = PieceColor::NONE, SDL_Renderer* rend = nullptr, Position initialPos = Position{ 0,0 }, PieceSize size = PieceSize{ 0,0 }, string colorLetter = "", string pieceLetter = "");
+	Queen(ChessElementColor color = ChessElementColor::NONE, string name="Queen");
 	~Queen();
-	string colorLetter;
-	string pieceLetter;
-	string extension;
+
+private:
+	inline static string whiteQueenFilename = IMG_PIECES_DIR+"wq.png";
+	inline static string blackQueenFilename = IMG_PIECES_DIR+"bq.png";
 };
-#endif // !QUEEN_H#pragma once
+#endif // !QUEEN_H

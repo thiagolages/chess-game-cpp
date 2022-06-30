@@ -7,12 +7,40 @@
 
 using namespace std;
 
+const int maxNumPawns		= 8;
+const int maxNumMiddlePieces= 2;
+
 Game::Game(bool closeGame, SDL_Renderer *rend, SDL_Window *window) 
 : closeGame(closeGame), rend(rend), window(window) {
+	
+	/* Board */
+	allElements.push_back(Board());
+	
+	/* Pieces */
+	for (int i = 0; i < 8; i++) {
+		allElements.push_back(Pawn(ChessElementColor::WHITE, "White Pawn" + to_string(i)));
+		allElements.push_back(Pawn(ChessElementColor::BLACK, "Black Pawn" + to_string(i)));
+	}
+	for (int i = 0; i < 2; i++) {
+		allElements.push_back(Bishop(ChessElementColor::WHITE, "White Bishop" + to_string(i)));
+		allElements.push_back(Bishop(ChessElementColor::BLACK, "Black Bishop" + to_string(i)));
+		
+		allElements.push_back(Knight(ChessElementColor::WHITE, "White Knight" + to_string(i)));
+		allElements.push_back(Knight(ChessElementColor::BLACK, "Black Knight" + to_string(i)));
+		
+		allElements.push_back(Rook(ChessElementColor::WHITE, "White Rook" + to_string(i)));
+		allElements.push_back(Rook(ChessElementColor::BLACK, "Black Rook" + to_string(i)));
+	}
 
+	allElements.push_back(Queen(ChessElementColor::WHITE, "White Queen"));
+	allElements.push_back(Queen(ChessElementColor::BLACK, "White Queen"));
+
+	allElements.push_back(King(ChessElementColor::WHITE, "Black King"));
+	allElements.push_back(King(ChessElementColor::BLACK, "Black King"));
 }
 
 Game::~Game() {
+
 	// destroy renderer
 	SDL_DestroyRenderer(rend);
 	// destroy window
@@ -24,9 +52,9 @@ Game::~Game() {
 void Game::init() {
 	
 	gameSDL_init();
-	renderBoard();
-	renderPieces();
-
+	for (auto &element : allElements) {
+		render(element);
+	}
 }
 
 void Game::gameSDL_init() {
@@ -48,73 +76,33 @@ void Game::gameSDL_init() {
 
 }
 
-void  Game::renderBoard() {
+void Game::render(ChessElement ce) {
 
-	string board_filename = IMG_BOARDS_DIR + "board.jpg";
-	ChessPiece board = ChessPiece(PieceColor::NONE, board_filename, rend);
-	board.render();
-}
+	/**************************************/
+	// old way of creating a texture (through a Surface)
+	//image_surface = IMG_Load(imgFilename.c_str());
 
-void Game::renderPieces() {
-	const int maxPawns = 8;
-	Pawn *whitePawns[maxPawns], *blackPawns[maxPawns];
-	for (int i = 0; i < maxPawns; i++) {
-		whitePawns[i] = new Pawn(PieceColor::WHITE, rend);
-		blackPawns[i] = new Pawn(PieceColor::BLACK, rend);
+	//if (image_surface == NULL) {
+	//	std::cout << "couldnt load " << imgFilename << std::endl;
+	//	cout << IMG_GetError() << endl;
+	//}
+	//// enhance the quality of the texture
+	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-		whitePawns[i]->render();
-		blackPawns[i]->render();
-	}
+	//texture = SDL_CreateTextureFromSurface(rend, image_surface);
+	/**************************************/
 
-	const int maxMiddlePieces = 2;
-	Rook* whiteRooks[maxMiddlePieces], * blackRooks[maxMiddlePieces];
-	for (int i = 0; i < maxMiddlePieces; i++) {
-		whiteRooks[i] = new Rook(PieceColor::WHITE, rend);
-		blackRooks[i] = new Rook(PieceColor::BLACK, rend);
-
-		whiteRooks[i]->render();
-		blackRooks[i]->render();
-	}
-
-	Knight* whiteKnights[maxMiddlePieces], * blackKnights[maxMiddlePieces];
-	for (int i = 0; i < maxMiddlePieces; i++) {
-		whiteKnights[i] = new Knight(PieceColor::WHITE, rend);
-		blackKnights[i] = new Knight(PieceColor::BLACK, rend);
-
-		whiteKnights[i]->render();
-		blackKnights[i]->render();
-	}
-
-	Bishop* whiteBishops[maxMiddlePieces], * blackBishops[maxMiddlePieces];
-	for (int i = 0; i < maxMiddlePieces; i++) {
-		whiteBishops[i] = new Bishop(PieceColor::WHITE, rend);
-		blackBishops[i] = new Bishop(PieceColor::BLACK, rend);
-
-		whiteBishops[i]->render();
-		blackBishops[i]->render();
-	}
-
-	Queen *whiteQueen, *blackQueen;
+	// new way of creating a texture (no need to use a Surface)
+	ce.texture = IMG_LoadTexture(rend, ce.imgFilename.c_str());
 	
-	whiteQueen = new Queen(PieceColor::WHITE, rend);
-	blackQueen = new Queen(PieceColor::BLACK, rend);
+	// enhance the quality of the texture
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-	whiteQueen->render();
-	blackQueen->render();
+	if (ce.texture == NULL) {
+		std::cout << "couldnt create texture from surface " << std::endl;
+		cout << IMG_GetError() << endl;
+	}
 
-	King* whiteKing, * blackKing;
+	SDL_RenderCopy(rend, ce.texture, ce.srcRect, ce.dstRect);
 
-	whiteKing = new King(PieceColor::WHITE, rend);
-	blackKing = new King(PieceColor::BLACK, rend);
-
-	whiteKing->render();
-	blackKing->render();
-	
-}
-
-void Game::render() {
-	// clears the screen
-	//SDL_RenderClear(rend);
-	SDL_RenderPresent(rend);
-	SDL_RenderCopy(rend, windowTexture, nullptr, nullptr);
 }

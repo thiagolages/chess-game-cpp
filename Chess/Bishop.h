@@ -1,18 +1,18 @@
-#pragma once
 #ifndef BISHOP_H
 #define BISHOP_H
 
-#include "ChessPiece.h"
+#include "Piece.h"
 #include <string>
 
-class Bishop : public ChessPiece {
+class Bishop : public Piece {
 
 public:
-	Bishop(PieceColor color = PieceColor::NONE, SDL_Renderer* rend = nullptr, Position initialPos = Position{ 0,0 }, PieceSize size = PieceSize{ 0,0 }, string colorLetter = "", string pieceLetter = "");
+	Bishop(ChessElementColor color = ChessElementColor::NONE, string name="Bishop");
 	~Bishop();
-	static int whiteBishopCounter, blackBishopCounter; // to count number of created Bishops and infere its position
-	string colorLetter;
-	string pieceLetter;
-	string extension;
+
+private:
+	static int whiteBishopCounter, blackBishopCounter; // to count number of created bishops and infere its position
+	inline static string whiteBishopFilename = IMG_PIECES_DIR+"wb.png";
+	inline static string blackBishopFilename = IMG_PIECES_DIR+"bb.png";
 };
-#endif // !BISHOP_H#pragma once
+#endif // !BISHOP_H

@@ -1,17 +1,18 @@
 #ifndef PAWN_H
 #define PAWN_H
 
-#include "ChessPiece.h"
+#include "Piece.h"
 #include <string>
 
-class Pawn : public ChessPiece {
+class Pawn : public Piece {
 
 public:
-	Pawn(PieceColor color=PieceColor::NONE, SDL_Renderer *rend=nullptr, Position initialPos = Position{ 0,0 }, PieceSize size = PieceSize{ 0,0 }, string colorLetter = "", string pieceLetter = "");
+	Pawn(ChessElementColor color = ChessElementColor::NONE, string name = "Pawn");
 	~Pawn();
+
+private:
 	static int whitePawnCounter, blackPawnCounter; // to count number of created pawns and infere its position
-	string colorLetter;
-	string pieceLetter;
-	string extension;
+	inline static string whitePawnFilename = IMG_PIECES_DIR+"wp.png";
+	inline static string blackPawnFilename = IMG_PIECES_DIR+"bp.png";
 };
 #endif // !PAWN_H

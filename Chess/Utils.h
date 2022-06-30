@@ -1,10 +1,11 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#ifndef UTILS_H
+#define UTILS_H
 
 #include <iostream>
 #include <string>
 #include <SDL.h>
-#include "ChessPiece.h"
+#include"ChessElement.h"
+#include "Piece.h"
 
 using namespace std;
 
@@ -13,10 +14,10 @@ extern const int CANVAS_WIDTH	;
 extern const int CANVAS_HEIGHT	;
 extern const int horizontalSquares;
 extern const int verticalSquares  ;
-extern const string IMG_PIECES_DIR;
-extern const string IMG_BOARDS_DIR;
-extern const PieceSize pieceSize;
+inline static const string IMG_PIECES_DIR = "images/pieces/";
+inline static const string IMG_BOARDS_DIR = "images/boards/";
 
 ostream& operator<< (ostream& out, const SDL_Rect* rec);
+ostream& operator<< (ostream& out, const ChessElementColor color);
 
-#endif // !CONSTANTS_H
+#endif // !UTILS_H
