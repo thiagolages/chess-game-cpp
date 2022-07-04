@@ -47,8 +47,8 @@ const int maxNumMiddlePieces= 2;
 
 Game::Game(bool closeGame, SDL_Renderer *rend, SDL_Window *window) 
 :	closeGame(closeGame), rend(rend), window(window), 
-	isMouseClicked(false), windowTexture(nullptr), currClickedPiece(nullptr),
-	isResetting(false) {
+	windowTexture(nullptr), currClickedPiece(nullptr),
+	isResetting(false), colorTurn(ChessElementColor::WHITE) {
 	
 	///* Board */
 	board = new Board();
@@ -120,7 +120,6 @@ void Game::renderAllElements() {
 	
 	// CHANGE THIS SO THAT CHESSELEMENT HAS A VIRTUAL FUNCTION CALLED setCurrPosInPixels
 	SDL_RenderClear(rend);
-
 	render(board);
 
 	for (auto piece : allPieces) {
@@ -141,6 +140,10 @@ void Game::show() {
 
 void Game::render(ChessElement* ce) {
 
+	if (ce->hasBeenCaptured) {
+		return;
+	}
+
 	/**************************************/
 	// old way of creating a texture (through a Surface)
 	//image_surface = IMG_Load(imgFilename.c_str());
@@ -157,7 +160,10 @@ void Game::render(ChessElement* ce) {
 
 	// new way of creating a texture (no need to use a Surface)
 	// REALLY IMPORTANT !! deallocate texture before assigning it to another one
+	
+
 	SDL_DestroyTexture(ce->texture);
+
 	ce->texture = IMG_LoadTexture(rend, ce->imgFilename.c_str());
 	
 	// enhance the quality of the texture
@@ -177,21 +183,31 @@ void Game::render(ChessElement* ce) {
 void Game::reset() {
 	this->isResetting = true;
 	for (auto piece : allPieces) {
-		cout << "Resetting " << piece->getName() << " to " << piece->getInitialPosInBoard() << endl;
+		//cout << "Resetting " << piece->getName() << " to " << piece->getInitialPosInBoard() << endl;
 		piece->setCurrPosInBoard(piece->getInitialPosInBoard());
-		cout << "Now " << piece->getName() << " initialPos =  " << piece->getInitialPosInBoard() << endl;
+		piece->hasBeenCaptured = false;
+		//cout << "Now " << piece->getName() << " initialPos =  " << piece->getInitialPosInBoard() << endl;
 	}
 }
 
-void Game::handleKeyDown(SDL_Event &event) {
-	switch (event.key.keysym.scancode) {
-		case SDL_SCANCODE_ESCAPE:
-			this->closeGame = true;
-			break;
-		case SDL_SCANCODE_R:
-			reset();
-			break;
-	}// end switch key scancode
+Piece* Game::pixelPositionToPiece(const int& xPosInPixels, const int& yPosInPixels) {
+	int posXInBoard, posYInBoard;
+	posXInBoard = xPosInPixels / Piece::pieceSize.w;
+	posYInBoard = yPosInPixels / Piece::pieceSize.w;
+	Position posInBoard = Position(posXInBoard, posYInBoard);
+	//cout << "posInBoard = " << posInBoard << endl;
+	for (auto e : allPieces) {
+		//cout << e->getName() << "is in " << e->getCurrPosInBoard() << endl;
+		if (posInBoard == e->getCurrPosInBoard()) {
+			return e;
+		}
+	}
+	// if nothing is found
+	return nullptr;
+}
+
+vector<Piece*> Game::getallPieces() {
+	return allPieces;
 }
 
 void Game::handleEvents(SDL_Event& event) {
@@ -214,81 +230,112 @@ void Game::handleEvents(SDL_Event& event) {
 	}// end switch event type
 }
 
-void Game::handleMouseMotion(SDL_Event &event) {
-	//cout << "[handleMouseMotion]event.type = " << event.type << endl;
-
-	if (this->currClickedPiece == nullptr || !this->isMouseClicked) {
-		return;
-	}
-
-	int x, y;
-	SDL_GetMouseState(&x, &y);
-	Position pos = { x - Piece::pieceSize.w / 2, y - Piece::pieceSize.h / 2 };
-
-	//cout << "MosePos = " << x << "," << y << endl;
-	
-	this->currClickedPiece->setCurrPosInPixels(pos);
-	render(this->currClickedPiece);
-
-
-	/*
-	Piece* piece = static_cast<Piece*>(allPieces[1]);
-	piece->setCurrPosInPixels(pos);
-	render(piece);
-	piece = nullptr;
-	delete piece;*/
+void Game::handleKeyDown(SDL_Event& event) {
+	switch (event.key.keysym.scancode) {
+	case SDL_SCANCODE_ESCAPE:
+		this->closeGame = true;
+		break;
+	case SDL_SCANCODE_R:
+		reset();
+		break;
+	}// end switch key scancode
 }
 
 void Game::handleMouseButtonDown(SDL_Event& event) {
 
-	this->isMouseClicked = true;
 	int xPosInPixels, yPosInPixels;
 	SDL_GetMouseState(&xPosInPixels, &yPosInPixels);
+
 	this->currClickedPiece = pixelPositionToPiece(xPosInPixels, yPosInPixels);
-	if (this->currClickedPiece == nullptr) {
-		cerr << "Clicked piece is invalid !" << endl;
-	}else {
-		cout << "Clicked piece is = " << this->currClickedPiece->getName() << endl;
-	}
 }
 
-Piece* Game::pixelPositionToPiece(const int &xPosInPixels, const int & yPosInPixels) {
-	int posXInBoard, posYInBoard;
-	posXInBoard = xPosInPixels / Piece::pieceSize.w;
-	posYInBoard = yPosInPixels / Piece::pieceSize.w;
-	Position posInBoard = Position(posXInBoard, posYInBoard);
-	for (auto e : allPieces) {
-		//Piece* p = static_cast<Piece*> (e);
-		if (posInBoard == static_cast<Piece*>(e)->getCurrPosInBoard()) {
-			return static_cast<Piece*>(e);
-		}
-	}
-	// if nothinf is found
-	return nullptr;
-}
+void Game::handleMouseMotion(SDL_Event& event) {
 
-void Game::handleMouseButtonUp(SDL_Event& event){
-	
-	this->isMouseClicked = false;
-	
 	if (this->currClickedPiece == nullptr) {
 		return;
 	}
 
-	int x, y;
-	SDL_GetMouseState(&x, &y);
-	int mousePosXInBoard = x / Piece::pieceSize.w;
-	int mousePosYInBoard = y / Piece::pieceSize.h;
+	int xPosInPixels, yPosInPixels;
+	SDL_GetMouseState(&xPosInPixels, &yPosInPixels);
+	Position pos = { xPosInPixels - Piece::pieceSize.w / 2, yPosInPixels - Piece::pieceSize.h / 2 };
 
-	Position pos = { mousePosXInBoard * Piece::pieceSize.w,
-					mousePosYInBoard * Piece::pieceSize.h };
+	// IMPORTANT: we must not update position in board yet, thus, using 'false'
+	this->currClickedPiece->setCurrPosInPixels(pos, false);
 
-	this->currClickedPiece->setCurrPosInPixels(pos);
-
-	this->currClickedPiece = nullptr;
-	
+	render(this->currClickedPiece);
 }
 
-vector<Piece*> Game::getallPieces() {
-	return allPieces;
+void Game::handleMouseButtonUp(SDL_Event& event) {
+
+	if (this->currClickedPiece == nullptr) {
+		return;
+	}
+
+	cout << "this->currClickedPiece = " << this->currClickedPiece->getName() << endl;
+
+	int xPosInPixels, yPosInPixels;
+	SDL_GetMouseState(&xPosInPixels, &yPosInPixels);
+
+	Position posInPixels = { xPosInPixels, yPosInPixels };
+	Position posInBoard  = { xPosInPixels / Piece::pieceSize.w, yPosInPixels / Piece::pieceSize.h };
+
+	Piece* targetPiece = pixelPositionToPiece(xPosInPixels, yPosInPixels);
+
+	if (targetPiece) {
+		cout << "targetpiece = " << targetPiece->getName() << endl;
+	}else{ cout << "targetpiece = nullptr" << endl; }
+	
+
+	// check legal moves
+	if (!this->currClickedPiece->isLegalMove(posInBoard)) {
+		// must render back to original position
+		// and then return
+		return;
+	}
+
+	// if nothing in the square, or if putting same piece back on it
+	if (targetPiece == nullptr || !isDifferentPiece(this->currClickedPiece, targetPiece)) {
+		// put the piece in the square where the mouse stopped
+		this->currClickedPiece->setCurrPosInBoard(posInBoard);
+	}
+	else {
+		// check capture or not
+		if (isDifferentColor(this->currClickedPiece, targetPiece)) {
+			// capture
+			cout << "different color pieces" << endl;
+			targetPiece->capturedPieceRoutine();
+			this->currClickedPiece->setCurrPosInBoard(posInBoard);
+		}
+		else { // not a capture
+			cout << "same color pieces" << endl;
+			// will be treated later, just checking if position is identified
+			this->currClickedPiece->setCurrPosInBoard(Position(0, 0));
+		}
+	}
+
+
+	// check pieces of same color
+	// check valid moves os pieces
+	// check if not putting king in check
+
+	this->currClickedPiece = nullptr;
+	targetPiece = nullptr;
+	delete targetPiece;
+
+	// change turns;
+	this->colorTurn = (this->colorTurn == ChessElementColor::WHITE ? ChessElementColor::BLACK : ChessElementColor::WHITE);
+	cout << "Now it's " << this->colorTurn << "'s turn" << endl;
+}
+
+bool Game::isYourTurn() {
+	if (this->currClickedPiece == nullptr) { return false; }
+	return (this->currClickedPiece->getColor() == this->colorTurn);
+}
+
+bool Game::isDifferentColor(Piece* p1, Piece* p2) {
+	return (p1->getColor() == p1->getColor());
+}
+
+bool Game::isDifferentPiece(Piece* p1, Piece* p2){
+	return (p1 != p2);
 }

@@ -13,10 +13,25 @@ using namespace std;
 Piece::Piece(ChessElementColor color, string imgFilename, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
 	: ChessElement(color, imgFilename, nullptr, srcRect, dstRect, name), 
 	  currPosInBoard(Position()), initialPosInBoard(Position()) {
+
 }
 
 Piece::~Piece() {
-	cout << "destructor() Piece" << name << endl;
+}
+
+bool Piece::isLegalMove(Position posInBoard) {
+	if (posInBoard.x < 0 || posInBoard.x >= 8
+	 || posInBoard.y < 0 || posInBoard.y >= 8) {
+		return false;
+	}
+	// will be implemented later on each derived class
+	return true;
+}
+
+void Piece::capturedPieceRoutine() {
+	this->hasBeenCaptured = true;
+	this->currPosInBoard  = { -1, -1 };
+	this->currPosInPixels = { -1, -1 };
 }
 
 void Piece::setSrcRect(SDL_Rect *srcRect) {
@@ -37,7 +52,7 @@ void Piece::setDstRect() {
 			pieceSize.h };
 }
 
-void Piece::setCurrPosInPixels(Position pos) {
+void Piece::setCurrPosInPixels(Position pos, bool updatePosInBoard) {
 
 	if (pos.x < 0 || pos.x >= CANVAS_WIDTH || pos.y < 0 || pos.y >= CANVAS_HEIGHT) {
 		cerr << "Wrong positioning of the piece " << imgFilename << "inside setCurrPosInPixels(). ";
@@ -46,11 +61,13 @@ void Piece::setCurrPosInPixels(Position pos) {
 	}
 
 	this->currPosInPixels = pos;
-
-	this->currPosInBoard = {
-		pos.x / Piece::pieceSize.w,
-		pos.y / Piece::pieceSize.h
-	};
+	
+	if (updatePosInBoard) {
+		this->currPosInBoard = {
+			pos.x / Piece::pieceSize.w,
+			pos.y / Piece::pieceSize.h
+		};
+	}
 
 	// always keep dstRect updated so it renders in the right place
 	setDstRect();
@@ -65,14 +82,16 @@ void Piece::setCurrPosInBoard(Position pos) {
 	}
 
 	this->currPosInBoard = pos;
+	if (pos.x >= 0 && pos.y >= 0) {
+		this->currPosInPixels = {
+		pos.x * Piece::pieceSize.w,
+		pos.y * Piece::pieceSize.h
+		};
 
-	this->currPosInPixels = {
-		pos.x *Piece::pieceSize.w,
-		pos.y* Piece::pieceSize.h
-	};
-
-	// always keep dstRect updated so it renders in the right place
-	setDstRect();
+		// always keep dstRect updated so it renders in the right place
+		setDstRect();
+	}
+	
 }
 
 void Piece::setInitialPosInBoard(Position pos) {

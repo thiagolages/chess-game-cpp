@@ -38,16 +38,17 @@ public:
 	~Piece();
 	void setSrcRect(SDL_Rect* srcRect);
 	void setDstRect();
-	void setCurrPosInPixels(Position pos);
-	void setCurrPosInBoard(Position pos);
-	void setInitialPosInBoard(Position pos);
+	void setCurrPosInPixels(Position, bool = true);
+	void setCurrPosInBoard(Position);
+	void setInitialPosInBoard(Position);
 	SDL_Rect* getSrcRect();
 	SDL_Rect* getDstRect();
 	ChessElementColor getColor();
 	Position getCurrPosInPixels();
 	Position getCurrPosInBoard();
 	Position getInitialPosInBoard();
-
+	bool isLegalMove(Position);
+	void capturedPieceRoutine();
 public:
 	inline static const PieceSize	 pieceSize = { 100, 100 }; // { CANVAS_WIDTH / horizontalSquares, CANVAS_HEIGHT / verticalSquares };
 

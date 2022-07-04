@@ -32,6 +32,8 @@ Bishop::Bishop(ChessElementColor color, string name)
 	Position posInBoard = { pos.x / Piece::pieceSize.w, pos.y / Piece::pieceSize.h };
 	setInitialPosInBoard(posInBoard);
 
+	cout << "setting " << name << "initial position to " << getInitialPosInBoard() << endl;
+
 	// increment number of created bishops
 	getColor() == ChessElementColor::WHITE ? Bishop::whiteBishopCounter++ : Bishop::blackBishopCounter++;
 }

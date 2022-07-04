@@ -5,13 +5,12 @@
 using namespace std;
 
 ChessElement::ChessElement(ChessElementColor color, string imgFilename,  SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
-	: imgFilename(imgFilename), color(color), texture(texture), srcRect(srcRect), dstRect(dstRect), name(name) {
-	cout << "constructor() " << name << endl;
+	: imgFilename(imgFilename), color(color), texture(texture), srcRect(srcRect), 
+	dstRect(dstRect), name(name), hasBeenCaptured(false) {
 }
 
 ChessElement::~ChessElement() {
 		
-	cout << "destructor() ChessElement" << name << endl;
 	SDL_DestroyTexture(this->texture);
 	
 	delete this->srcRect;
@@ -20,4 +19,22 @@ ChessElement::~ChessElement() {
 
 string ChessElement::getName() {
 	return name;
+}
+
+ostream& operator<< (ostream& out, const ChessElementColor color) {
+
+	switch (color) {
+	case ChessElementColor::WHITE:
+		out << "WHITE";
+		break;
+	case ChessElementColor::BLACK:
+		out << "BLACK";
+		break;
+	case ChessElementColor::NONE:
+		out << "NONE";
+		break;
+	default:
+		break;
+	}
+	return out;
 }

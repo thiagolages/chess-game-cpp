@@ -8,7 +8,6 @@ const string King::whiteKingFilename = IMG_PIECES_DIR + "wk.png";
 const string King::blackKingFilename = IMG_PIECES_DIR + "bk.png";
 
 King::~King() {
-	cout << "destructor() King" << name << endl;
 }
 
 King::King(ChessElementColor color, string name)

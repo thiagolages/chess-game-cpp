@@ -7,12 +7,14 @@
 using namespace std;
 
 enum class ChessElementColor { WHITE, BLACK, NONE };
+ostream& operator<< (ostream& out, const ChessElementColor color);
 
 class ChessElement {
 
 	public:
 		ChessElement(ChessElementColor color = ChessElementColor::NONE, string imgFilename = "", SDL_Texture * texture = nullptr, SDL_Rect* srcRect = nullptr, SDL_Rect* dstRect = nullptr, string name = "");
 		~ChessElement();
+		bool hasBeenCaptured;
 
 	public:
 		string getName();

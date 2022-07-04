@@ -29,6 +29,9 @@ public:
 	void handleMouseButtonDown(SDL_Event& event);
 	Piece* pixelPositionToPiece(const int& x, const int& y);
 	void reset();
+	bool isYourTurn();
+	bool isDifferentColor(Piece* p1, Piece* p2);
+	bool isDifferentPiece(Piece* p1, Piece* p2);
 	SDL_Renderer* rend;
 	bool closeGame;
 	vector<Piece*> getallPieces();
@@ -40,8 +43,8 @@ private:
 	vector<Piece*>	allPieces;
 	SDL_Window* window;
 	SDL_Texture* windowTexture;
-	bool isMouseClicked;
 	Piece *currClickedPiece;
+	ChessElementColor colorTurn;
 	
 	//SDL_Rect* calcRenderPosition(ChessElement element);	
 
