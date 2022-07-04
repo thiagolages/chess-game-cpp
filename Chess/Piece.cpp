@@ -7,11 +7,15 @@
 
 using namespace std;
 
+//string Piece::pieceBaseFileDir		= "images/pieces/";
+//string Piece::pieceBaseFileExtension	= ".png";
+
 Piece::Piece(ChessElementColor color, string imgFilename, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
 	: ChessElement(color, imgFilename, nullptr, srcRect, dstRect, name), currPosInBoard(Position()){
 }
 
 Piece::~Piece() {
+	cout << "destructor() Piece" << name << endl;
 }
 
 void Piece::setSrcRect(SDL_Rect *srcRect) {
@@ -40,11 +44,13 @@ void Piece::setCurrPosInPixels(Position pos) {
 	};
 
 	// always keep dstRect updated so it renders in the right place
-	setDstRect(new SDL_Rect{
+	SDL_Rect* newRect = new SDL_Rect{
 			pos.x,
 			pos.y,
 			pieceSize.w,
-			pieceSize.h });
+			pieceSize.h };
+
+	setDstRect(newRect);
 }
 
 void Piece::setCurrPosInBoard(Position pos) {

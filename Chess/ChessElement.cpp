@@ -6,12 +6,18 @@ using namespace std;
 
 ChessElement::ChessElement(ChessElementColor color, string imgFilename,  SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
 	: imgFilename(imgFilename), color(color), texture(texture), srcRect(srcRect), dstRect(dstRect), name(name) {
-
+	cout << "constructor() " << name << endl;
 }
 
 ChessElement::~ChessElement() {
-	//SDL_DestroyTexture(texture);
+		
+	cout << "destructor() ChessElement" << name << endl;
+	SDL_DestroyTexture(this->texture);
+	
+	delete this->srcRect;
+	delete this->dstRect;
+}
 
-	/*delete srcRect;
-	delete dstRect;*/
+string ChessElement::getName() {
+	return name;
 }

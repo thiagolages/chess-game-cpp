@@ -14,7 +14,6 @@ Pawn::Pawn(ChessElementColor color, string name)
 	: Piece(color, "", nullptr, nullptr, name){
 
 	imgFilename = (getColor() == ChessElementColor::WHITE ? whitePawnFilename : blackPawnFilename);
-
 	if (getColor() != ChessElementColor::WHITE && getColor() != ChessElementColor::BLACK) {
 		cerr << "Wrong color passed to Pawn constructor !" << endl;
 	}

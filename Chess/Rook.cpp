@@ -7,6 +7,9 @@ int Rook::blackRookCounter = 0; // initialize
 
 using namespace std;
 
+const string Rook::whiteRookFilename = IMG_PIECES_DIR+"wr.png";
+const string Rook::blackRookFilename = IMG_PIECES_DIR+"br.png";
+
 Rook::~Rook() {
 }
 
@@ -23,7 +26,7 @@ Rook::Rook(ChessElementColor color, string name)
 	int yRow	= getColor() == ChessElementColor::WHITE ? 7 : 0;									// spawn Rooks on 8nd or 1th row (indexes 7 or 0)
 
 	Position pos;
-	pos.x = counter == 1 ? 0 : 7 * CANVAS_WIDTH / 8;
+	pos.x = counter == 0 ? 0 : 7 * CANVAS_WIDTH / 8;
 	pos.y = yRow * CANVAS_HEIGHT / 8;
 
 	setCurrPosInPixels(pos);

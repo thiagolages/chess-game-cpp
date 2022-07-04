@@ -12,7 +12,7 @@ public:
 
 private:
 	static int whiteBishopCounter, blackBishopCounter; // to count number of created bishops and infere its position
-	inline static string whiteBishopFilename = IMG_PIECES_DIR+"wb.png";
-	inline static string blackBishopFilename = IMG_PIECES_DIR+"bb.png";
+	static const string whiteBishopFilename;
+	static const string blackBishopFilename;
 };
 #endif // !BISHOP_H

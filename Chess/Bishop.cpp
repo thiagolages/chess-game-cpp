@@ -4,6 +4,8 @@
 
 int Bishop::whiteBishopCounter = 0; // initialize 
 int Bishop::blackBishopCounter = 0; // initialize 
+const string Bishop::whiteBishopFilename = IMG_PIECES_DIR + "wb.png";
+const string Bishop::blackBishopFilename = IMG_PIECES_DIR + "bb.png";
 
 using namespace std;
 
@@ -23,7 +25,7 @@ Bishop::Bishop(ChessElementColor color, string name)
 	int yRow	= getColor() == ChessElementColor::WHITE ? 7 : 0;									// spawn Bishops on 8nd or 1th row (indexes 7 or 0)
 
 	Position pos;
-	pos.x = counter == 1 ? 2 * CANVAS_WIDTH / 8 : 5 * CANVAS_WIDTH / 8;
+	pos.x = counter == 0 ? 2 * CANVAS_WIDTH / 8 : 5 * CANVAS_WIDTH / 8;
 	pos.y = yRow * CANVAS_HEIGHT / 8;
 
 	setCurrPosInPixels(pos);

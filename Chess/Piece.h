@@ -15,6 +15,9 @@ typedef struct Position {
 	int x, y;
 	Position() { x = -1; y = -1; }
 	Position(int xArg, int yArg) { x = xArg; y = yArg; }
+	inline friend bool operator== (const Position& lhs, const Position& rhs) {
+		return (lhs.x == rhs.x && lhs.y == rhs.y);
+	}
 }Position;
 
 typedef struct PieceSize {
@@ -27,7 +30,7 @@ typedef struct PieceSize {
 class Piece : public ChessElement { 
 	
 public:
-	Piece(ChessElementColor color = ChessElementColor::NONE, string imgFilename = "", SDL_Rect * srcRect = NULL, SDL_Rect * dstRect = NULL, string name="");
+	Piece(ChessElementColor color = ChessElementColor::NONE, string imgFilename = "", SDL_Rect* srcRect = NULL, SDL_Rect* dstRect = NULL, string name = "");
 	~Piece();
 	void setSrcRect(SDL_Rect* srcRect);
 	void setDstRect(SDL_Rect* dstRect);
@@ -40,13 +43,11 @@ public:
 	Position getCurrPosInPixels();
 
 public:
-
 	inline static const PieceSize	 pieceSize = { 100, 100 }; // { CANVAS_WIDTH / horizontalSquares, CANVAS_HEIGHT / verticalSquares };
 
 protected:
 	Position		currPosInBoard; // with respect to the board. (0,0) being 1st row, 1st column
 	Position		currPosInPixels; // with respect to the window
-	
-
+	//static string pieceBaseFileDir, pieceBaseFileExtension;
 };
 #endif // !CHESS_PIECE_H

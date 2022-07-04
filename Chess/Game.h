@@ -19,24 +19,28 @@ public:
 	~Game();
 	void init();
 	void gameSDL_init();
-	void render(ChessElement ce);
+	void show(); // actually show render on the screen
+	void render(ChessElement* ce);
+	void renderAllElements();
+	void handleEvents(SDL_Event &event);
+	void handleKeyDown(SDL_Event &event);
+	void handleMouseMotion(SDL_Event &event);
+	void handleMouseButtonUp(SDL_Event& event);
+	void handleMouseButtonDown(SDL_Event& event);
+	Piece* pixelPositionToPiece(const int& x, const int& y);
 	SDL_Renderer* rend;
 	bool closeGame;
+	vector<ChessElement*> getAllElements();
+	vector<ChessElement*>	allElements;
 
 private:
 	
 	SDL_Window* window;
 	SDL_Texture* windowTexture;
+	bool isMouseClicked;
+	Piece *currClickedPiece;
 	
-	//SDL_Rect* calcRenderPosition(ChessElement element);
-	
-	vector<ChessElement>	allElements;
-	//vector<Pawn>	whitePawns	, blackPawns;
-	//vector<Bishop>	whiteBishops, blackBishops;
-	//vector<Knight>	whiteKnights, blackKnights;
-	//vector<Rook>	whiteRooks	, blackRooks;
-	//Queen			whiteQueen	, blackQueen;
-	//King			whiteKing	, blackKing; 
+	//SDL_Rect* calcRenderPosition(ChessElement element);	
 
 };
 

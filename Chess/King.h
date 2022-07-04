@@ -11,7 +11,7 @@ public:
 	~King();
 
 private:
-	inline static string whiteKingFilename = IMG_PIECES_DIR+"wk.png";
-	inline static string blackKingFilename = IMG_PIECES_DIR+"bk.png";
+	static const string whiteKingFilename;
+	static const string blackKingFilename;
 };
 #endif // !KING_H

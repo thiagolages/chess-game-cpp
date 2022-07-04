@@ -15,6 +15,7 @@ class ChessElement {
 		~ChessElement();
 
 	public:
+		string getName();
 		string imgFilename;
 		ChessElementColor	color;
 		SDL_Texture* texture;

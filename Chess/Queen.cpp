@@ -4,6 +4,9 @@
 
 using namespace std;
 
+const string Queen::whiteQueenFilename = IMG_PIECES_DIR+"wq.png";
+const string Queen::blackQueenFilename = IMG_PIECES_DIR+"bq.png";
+
 Queen::~Queen() {
 }
 

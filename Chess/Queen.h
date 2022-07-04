@@ -11,7 +11,7 @@ public:
 	~Queen();
 
 private:
-	inline static string whiteQueenFilename = IMG_PIECES_DIR+"wq.png";
-	inline static string blackQueenFilename = IMG_PIECES_DIR+"bq.png";
+	static const string whiteQueenFilename;
+	static const string blackQueenFilename;
 };
 #endif // !QUEEN_H

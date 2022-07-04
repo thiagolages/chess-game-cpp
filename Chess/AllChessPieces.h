@@ -1,7 +1,7 @@
 #ifndef ALL_CHESS_PIECES_H
 #define ALL_CHESS_PIECES_H
 
-#include "Piece.h"
+#include"Piece.h"
 #include"Pawn.h"
 #include"Bishop.h"
 #include"Knight.h"
