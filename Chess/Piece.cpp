@@ -11,7 +11,8 @@ using namespace std;
 //string Piece::pieceBaseFileExtension	= ".png";
 
 Piece::Piece(ChessElementColor color, string imgFilename, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
-	: ChessElement(color, imgFilename, nullptr, srcRect, dstRect, name), currPosInBoard(Position()){
+	: ChessElement(color, imgFilename, nullptr, srcRect, dstRect, name), 
+	  currPosInBoard(Position()), initialPosInBoard(Position()) {
 }
 
 Piece::~Piece() {
@@ -23,9 +24,17 @@ void Piece::setSrcRect(SDL_Rect *srcRect) {
 	this->srcRect = srcRect;
 }
 
-void Piece::setDstRect(SDL_Rect *dstRect) {
-	delete this->dstRect;
-	this->dstRect = dstRect;
+void Piece::setDstRect() {
+
+	if (this->dstRect != nullptr) {
+		delete this->dstRect; // delete current pointer
+	}
+	Position pos = getCurrPosInPixels();
+	this->dstRect = new SDL_Rect{
+			pos.x,
+			pos.y,
+			pieceSize.w,
+			pieceSize.h };
 }
 
 void Piece::setCurrPosInPixels(Position pos) {
@@ -37,20 +46,14 @@ void Piece::setCurrPosInPixels(Position pos) {
 	}
 
 	this->currPosInPixels = pos;
-	
+
 	this->currPosInBoard = {
-		pos.x / pieceSize.w,
-		pos.y / pieceSize.h
+		pos.x / Piece::pieceSize.w,
+		pos.y / Piece::pieceSize.h
 	};
 
 	// always keep dstRect updated so it renders in the right place
-	SDL_Rect* newRect = new SDL_Rect{
-			pos.x,
-			pos.y,
-			pieceSize.w,
-			pieceSize.h };
-
-	setDstRect(newRect);
+	setDstRect();
 }
 
 void Piece::setCurrPosInBoard(Position pos) {
@@ -61,19 +64,29 @@ void Piece::setCurrPosInBoard(Position pos) {
 		return;
 	}
 
-	this->currPosInPixels = pos;
+	this->currPosInBoard = pos;
 
-	this->currPosInBoard = {
-		pos.x / pieceSize.w,
-		pos.y / pieceSize.h
+	this->currPosInPixels = {
+		pos.x *Piece::pieceSize.w,
+		pos.y* Piece::pieceSize.h
 	};
 
 	// always keep dstRect updated so it renders in the right place
-	setDstRect(new SDL_Rect{
-			pos.x,
-			pos.y,
-			pieceSize.w,
-			pieceSize.h });
+	setDstRect();
+}
+
+void Piece::setInitialPosInBoard(Position pos) {
+
+	if (pos.x < 0 || pos.x >= horizontalSquares || pos.y < 0 || pos.y >= verticalSquares) {
+		cerr << "Wrong positioning of the piece inside setCurrPosInBoard(). ";
+		cerr << "Received (" << pos.x << ", " << pos.y << ") as argument" << endl;
+		return;
+	}
+
+	this->initialPosInBoard = {
+		pos.x,
+		pos.y
+	};
 }
 
 SDL_Rect* Piece::getSrcRect() {
@@ -90,6 +103,10 @@ ChessElementColor Piece::getColor() {
 
 Position Piece::getCurrPosInBoard() { 
 	return this->currPosInBoard; 
+}
+
+Position Piece::getInitialPosInBoard() {
+	return this->initialPosInBoard;
 }
 
 Position Piece::getCurrPosInPixels() {

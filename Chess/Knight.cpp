@@ -30,7 +30,11 @@ Knight::Knight(ChessElementColor color, string name)
 	pos.y = yRow * CANVAS_HEIGHT / 8;
 
 	setCurrPosInPixels(pos);
+	Position posInBoard = { pos.x / Piece::pieceSize.w, pos.y / Piece::pieceSize.h };
+	setInitialPosInBoard(posInBoard);
 
+	cout << "setting " << name << "initial position to " << getInitialPosInBoard() << endl;
+	
 	// increment number of created knights
 	getColor() == ChessElementColor::WHITE ? Knight::whiteKnightCounter++ : Knight::blackKnightCounter++;
 }

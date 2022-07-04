@@ -22,4 +22,7 @@ King::King(ChessElementColor color, string name)
 	pos.x = 4 * CANVAS_WIDTH / 8;
 	pos.y = yRow * CANVAS_HEIGHT / 8;
 	setCurrPosInPixels(pos);
+	Position posInBoard = { pos.x / Piece::pieceSize.w, pos.y / Piece::pieceSize.h };
+	setInitialPosInBoard(posInBoard);
+	cout << "setting " << name << "initial position to " << getInitialPosInBoard() << endl;
 }

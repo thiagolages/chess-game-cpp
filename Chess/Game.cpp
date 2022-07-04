@@ -46,33 +46,34 @@ const int maxNumMiddlePieces= 2;
 //}
 
 Game::Game(bool closeGame, SDL_Renderer *rend, SDL_Window *window) 
-: closeGame(closeGame), rend(rend), window(window), 
-  isMouseClicked(false), windowTexture(nullptr), currClickedPiece(nullptr) {
+:	closeGame(closeGame), rend(rend), window(window), 
+	isMouseClicked(false), windowTexture(nullptr), currClickedPiece(nullptr),
+	isResetting(false) {
 	
 	///* Board */
-	allElements.push_back(new Board());
+	board = new Board();
 
 	///* Pieces */
 	for (int i = 0; i < 8; i++) {
-		allElements.push_back(new Pawn (ChessElementColor::WHITE, "White Pawn"    + to_string(i)));
-		allElements.push_back(new Pawn (ChessElementColor::BLACK, "Black Pawn"    + to_string(i)));
+		allPieces.push_back(new Pawn (ChessElementColor::WHITE, "White Pawn"    + to_string(i)));
+		allPieces.push_back(new Pawn (ChessElementColor::BLACK, "Black Pawn"    + to_string(i)));
 	}
 	for (int i = 0; i < 2; i++) {
-		allElements.push_back(new Bishop(ChessElementColor::WHITE, "White Bishop" + to_string(i)));
-		allElements.push_back(new Bishop(ChessElementColor::BLACK, "Black Bishop" + to_string(i)));
+		allPieces.push_back(new Bishop(ChessElementColor::WHITE, "White Bishop" + to_string(i)));
+		allPieces.push_back(new Bishop(ChessElementColor::BLACK, "Black Bishop" + to_string(i)));
 		
-		allElements.push_back(new Knight(ChessElementColor::WHITE, "White Knight" + to_string(i)));
-		allElements.push_back(new Knight(ChessElementColor::BLACK, "Black Knight" + to_string(i)));
+		allPieces.push_back(new Knight(ChessElementColor::WHITE, "White Knight" + to_string(i)));
+		allPieces.push_back(new Knight(ChessElementColor::BLACK, "Black Knight" + to_string(i)));
 		
-		allElements.push_back(new Rook  (ChessElementColor::WHITE, "White Rook"   + to_string(i)));
-		allElements.push_back(new Rook  (ChessElementColor::BLACK, "Black Rook"   + to_string(i)));
+		allPieces.push_back(new Rook  (ChessElementColor::WHITE, "White Rook"   + to_string(i)));
+		allPieces.push_back(new Rook  (ChessElementColor::BLACK, "Black Rook"   + to_string(i)));
 	}
 
-	allElements.push_back(new Queen(ChessElementColor::WHITE, "White Queen"));
-	allElements.push_back(new Queen(ChessElementColor::BLACK, "Black Queen"));
+	allPieces.push_back(new Queen(ChessElementColor::WHITE, "White Queen"));
+	allPieces.push_back(new Queen(ChessElementColor::BLACK, "Black Queen"));
 
-	allElements.push_back(new King(ChessElementColor::WHITE, "White King"));
-	allElements.push_back(new King(ChessElementColor::BLACK, "Black King"));
+	allPieces.push_back(new King(ChessElementColor::WHITE, "White King"));
+	allPieces.push_back(new King(ChessElementColor::BLACK, "Black King"));
 }
 
 Game::~Game() {
@@ -120,16 +121,16 @@ void Game::renderAllElements() {
 	// CHANGE THIS SO THAT CHESSELEMENT HAS A VIRTUAL FUNCTION CALLED setCurrPosInPixels
 	SDL_RenderClear(rend);
 
-	for (auto &element : allElements) {
-		
-		/*vector<ChessElement*> vec_ce_pointer;
-		vec_ce_pointer.push_back(&element);
-		Piece* piece = (Piece*)vec_ce_pointer[0];
-		render(*piece);*/
-		//Piece* piece = static_cast<Piece*>(element);
-		//render(*piece);
-		render(element);
-		
+	render(board);
+
+	for (auto piece : allPieces) {
+		if (this->isResetting) {
+			cout << "Rendering " << piece->getName() << " to " << piece->getCurrPosInBoard() << endl;
+		}
+		render(piece);
+	}
+	if (this->isResetting) {
+		this->isResetting = false;
 	}
 	show();
 }
@@ -173,18 +174,50 @@ void Game::render(ChessElement* ce) {
 	//delete ce->texture;
 }
 
+void Game::reset() {
+	this->isResetting = true;
+	for (auto piece : allPieces) {
+		cout << "Resetting " << piece->getName() << " to " << piece->getInitialPosInBoard() << endl;
+		piece->setCurrPosInBoard(piece->getInitialPosInBoard());
+		cout << "Now " << piece->getName() << " initialPos =  " << piece->getInitialPosInBoard() << endl;
+	}
+}
+
 void Game::handleKeyDown(SDL_Event &event) {
 	switch (event.key.keysym.scancode) {
 		case SDL_SCANCODE_ESCAPE:
 			this->closeGame = true;
 			break;
+		case SDL_SCANCODE_R:
+			reset();
+			break;
 	}// end switch key scancode
+}
+
+void Game::handleEvents(SDL_Event& event) {
+	switch (event.type) {
+	case SDL_QUIT: // handling of closeGame button
+		this->closeGame = true;
+		break;
+	case SDL_KEYDOWN:
+		this->handleKeyDown(event);
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		this->handleMouseButtonDown(event);
+		break;
+	case SDL_MOUSEBUTTONUP:
+		this->handleMouseButtonUp(event);
+		break;
+	case SDL_MOUSEMOTION:
+		this->handleMouseMotion(event);
+		break;
+	}// end switch event type
 }
 
 void Game::handleMouseMotion(SDL_Event &event) {
 	//cout << "[handleMouseMotion]event.type = " << event.type << endl;
 
-	if (this->currClickedPiece == nullptr) {
+	if (this->currClickedPiece == nullptr || !this->isMouseClicked) {
 		return;
 	}
 
@@ -199,31 +232,11 @@ void Game::handleMouseMotion(SDL_Event &event) {
 
 
 	/*
-	Piece* piece = static_cast<Piece*>(allElements[1]);
+	Piece* piece = static_cast<Piece*>(allPieces[1]);
 	piece->setCurrPosInPixels(pos);
 	render(piece);
 	piece = nullptr;
 	delete piece;*/
-}
-
-void Game::handleEvents(SDL_Event &event) {
-	switch (event.type) {
-		case SDL_QUIT: // handling of closeGame button
-			this->closeGame = true;
-			break;
-		case SDL_KEYDOWN:
-			this->handleKeyDown(event);
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			this->handleMouseButtonDown(event);
-			break;
-		case SDL_MOUSEBUTTONUP:
-			this->handleMouseButtonUp(event);
-			break;
-		case SDL_MOUSEMOTION:
-			this->handleMouseMotion(event);
-			break;
-	}// end switch event type
 }
 
 void Game::handleMouseButtonDown(SDL_Event& event) {
@@ -244,7 +257,7 @@ Piece* Game::pixelPositionToPiece(const int &xPosInPixels, const int & yPosInPix
 	posXInBoard = xPosInPixels / Piece::pieceSize.w;
 	posYInBoard = yPosInPixels / Piece::pieceSize.w;
 	Position posInBoard = Position(posXInBoard, posYInBoard);
-	for (auto e : allElements) {
+	for (auto e : allPieces) {
 		//Piece* p = static_cast<Piece*> (e);
 		if (posInBoard == static_cast<Piece*>(e)->getCurrPosInBoard()) {
 			return static_cast<Piece*>(e);
@@ -255,14 +268,27 @@ Piece* Game::pixelPositionToPiece(const int &xPosInPixels, const int & yPosInPix
 }
 
 void Game::handleMouseButtonUp(SDL_Event& event){
+	
+	this->isMouseClicked = false;
+	
+	if (this->currClickedPiece == nullptr) {
+		return;
+	}
+
 	int x, y;
 	SDL_GetMouseState(&x, &y);
+	int mousePosXInBoard = x / Piece::pieceSize.w;
+	int mousePosYInBoard = y / Piece::pieceSize.h;
 
-	this->isMouseClicked = false;
-	this->currClickedPiece == nullptr;
+	Position pos = { mousePosXInBoard * Piece::pieceSize.w,
+					mousePosYInBoard * Piece::pieceSize.h };
+
+	this->currClickedPiece->setCurrPosInPixels(pos);
+
+	this->currClickedPiece = nullptr;
 	
 }
 
-vector<ChessElement*> Game::getAllElements() {
-	return allElements;
+vector<Piece*> Game::getallPieces() {
+	return allPieces;
 }

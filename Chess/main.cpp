@@ -38,36 +38,36 @@ int main(int argc, char* argv[]){
 	game.init();
 
 	/* Board */
-	//game.allElements.push_back(DBG_NEW Board());
+	//game.allPieces.push_back(DBG_NEW Board());
 
 	//Board* b = DBG_NEW Board();
 	//delete b;
 
 	///* Pieces */
 	//for (int i = 0; i < 8; i++) {
-	//	game.allElements.push_back(DBG_NEW Pawn(ChessElementColor::WHITE, "White Pawn" + to_string(i)));
-	//	game.allElements.push_back(DBG_NEW Pawn(ChessElementColor::BLACK, "Black Pawn" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Pawn(ChessElementColor::WHITE, "White Pawn" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Pawn(ChessElementColor::BLACK, "Black Pawn" + to_string(i)));
 	//}
 	//for (int i = 0; i < 2; i++) {
-	//	game.allElements.push_back(DBG_NEW Bishop(ChessElementColor::WHITE, "White Bishop" + to_string(i)));
-	//	game.allElements.push_back(DBG_NEW Bishop(ChessElementColor::BLACK, "Black Bishop" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Bishop(ChessElementColor::WHITE, "White Bishop" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Bishop(ChessElementColor::BLACK, "Black Bishop" + to_string(i)));
 
-	//	game.allElements.push_back(DBG_NEW Knight(ChessElementColor::WHITE, "White Knight" + to_string(i)));
-	//	game.allElements.push_back(DBG_NEW Knight(ChessElementColor::BLACK, "Black Knight" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Knight(ChessElementColor::WHITE, "White Knight" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Knight(ChessElementColor::BLACK, "Black Knight" + to_string(i)));
 
-	//	game.allElements.push_back(DBG_NEW Rook(ChessElementColor::WHITE, "White Rook" + to_string(i)));
-	//	game.allElements.push_back(DBG_NEW Rook(ChessElementColor::BLACK, "Black Rook" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Rook(ChessElementColor::WHITE, "White Rook" + to_string(i)));
+	//	game.allPieces.push_back(DBG_NEW Rook(ChessElementColor::BLACK, "Black Rook" + to_string(i)));
 	//}
 
-	//game.allElements.push_back(DBG_NEW Queen(ChessElementColor::WHITE, "White Queen"));
-	//game.allElements.push_back(DBG_NEW Queen(ChessElementColor::BLACK, "White Queen"));
+	//game.allPieces.push_back(DBG_NEW Queen(ChessElementColor::WHITE, "White Queen"));
+	//game.allPieces.push_back(DBG_NEW Queen(ChessElementColor::BLACK, "White Queen"));
 
-	//game.allElements.push_back(DBG_NEW King(ChessElementColor::WHITE, "Black King"));
-	//game.allElements.push_back(DBG_NEW King(ChessElementColor::BLACK, "Black King"));
+	//game.allPieces.push_back(DBG_NEW King(ChessElementColor::WHITE, "Black King"));
+	//game.allPieces.push_back(DBG_NEW King(ChessElementColor::BLACK, "Black King"));
 
-	//game.renderAllElements();
+	//game.renderallPieces();
 
-	//ChessElement el = game.getgame.allElements().at(1);
+	//ChessElement el = game.getgame.allPieces().at(1);
 	//cout << el.getName() << endl;
 	//
 	//Position pos = { 400, 400 };
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]){
 
 		
 		
-		//Piece* piece = static_cast<Piece*>(game.allElements[1]);
+		//Piece* piece = static_cast<Piece*>(game.allPieces[1]);
 		//
 		////Position pos = { piece->getCurrPosInPixels().x, piece->getCurrPosInPixels().y};
 		//Position pos = { 400, 400};

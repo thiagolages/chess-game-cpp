@@ -28,13 +28,16 @@ public:
 	void handleMouseButtonUp(SDL_Event& event);
 	void handleMouseButtonDown(SDL_Event& event);
 	Piece* pixelPositionToPiece(const int& x, const int& y);
+	void reset();
 	SDL_Renderer* rend;
 	bool closeGame;
-	vector<ChessElement*> getAllElements();
-	vector<ChessElement*>	allElements;
+	vector<Piece*> getallPieces();
+	
 
 private:
-	
+	bool isResetting;
+	Board* board;
+	vector<Piece*>	allPieces;
 	SDL_Window* window;
 	SDL_Texture* windowTexture;
 	bool isMouseClicked;
