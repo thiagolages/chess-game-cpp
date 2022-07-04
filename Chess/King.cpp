@@ -25,3 +25,26 @@ King::King(ChessElementColor color, string name)
 	setInitialPosInBoard(posInBoard);
 	cout << "setting " << name << "initial position to " << getInitialPosInBoard() << endl;
 }
+
+vector<Position> King::calcMoves() {
+
+	vector<Position> vec;
+
+	int delta = 1;
+	/* diagonals */
+	vec.push_back(Position(delta, delta));
+	vec.push_back(Position(delta, -delta));
+	vec.push_back(Position(-delta, delta));
+	vec.push_back(Position(-delta, -delta));
+
+	/* up/down */
+	vec.push_back(Position(0, delta));
+	vec.push_back(Position(0, -delta));
+
+	/* left/right */
+	vec.push_back(Position(delta, 0));
+	vec.push_back(Position(-delta, 0));
+
+
+	return vec;
+}

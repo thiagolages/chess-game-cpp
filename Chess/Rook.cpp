@@ -38,3 +38,21 @@ Rook::Rook(ChessElementColor color, string name)
 	// increment number of created rooks
 	getColor() == ChessElementColor::WHITE ? Rook::whiteRookCounter++ : Rook::blackRookCounter++;
 }
+
+vector<Position> Rook::calcMoves() {
+
+	vector<Position> vec;
+
+	for (int delta = 1; delta < horizontalSquares; delta++) {
+
+		/* up/down */
+		vec.push_back(Position(0, delta));
+		vec.push_back(Position(0, -delta));
+
+		/* left/right */
+		vec.push_back(Position(delta, 0));
+		vec.push_back(Position(-delta, 0));
+	}
+
+	return vec;
+}

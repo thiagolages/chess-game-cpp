@@ -30,3 +30,26 @@ Queen::Queen(ChessElementColor color, string name)
 	setInitialPosInBoard(posInBoard);
 	cout << "setting " << name << "initial position to " << getInitialPosInBoard() << endl;
 }
+
+vector<Position> Queen::calcMoves() {
+
+	vector<Position> vec;
+
+	for (int delta = 1; delta < horizontalSquares; delta++) {
+		/* diagonals */
+		vec.push_back(Position(delta, delta));
+		vec.push_back(Position(delta, -delta));
+		vec.push_back(Position(-delta, delta));
+		vec.push_back(Position(-delta, -delta));
+		
+		/* up/down */
+		vec.push_back(Position(0,  delta));
+		vec.push_back(Position(0, -delta));
+
+		/* left/right */
+		vec.push_back(Position( delta, 0));
+		vec.push_back(Position(-delta, 0));
+	}
+
+	return vec;
+}

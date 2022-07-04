@@ -38,3 +38,26 @@ Knight::Knight(ChessElementColor color, string name)
 	// increment number of created knights
 	getColor() == ChessElementColor::WHITE ? Knight::whiteKnightCounter++ : Knight::blackKnightCounter++;
 }
+
+vector<Position> Knight::calcMoves() {
+
+	vector<Position> vec;
+
+	/* right */
+	vec.push_back(Position(2,  1));
+	vec.push_back(Position(2, -1));
+
+	/* left */
+	vec.push_back(Position(-2,  1));
+	vec.push_back(Position(-2, -1));
+
+	/* down */
+	vec.push_back(Position( 1, 2));
+	vec.push_back(Position(-1, 2));
+
+	/* up */
+	vec.push_back(Position( 1, -2));
+	vec.push_back(Position(-1, -2));
+
+	return vec;
+}

@@ -16,5 +16,6 @@ private:
 	inline static string blackPawnFilename = IMG_PIECES_DIR+"bp.png";*/
 	string whitePawnFilename = "images/pieces/wp.png";
 	string blackPawnFilename = "images/pieces/bp.png";
+	virtual vector<Position> calcMoves();
 };
 #endif // !PAWN_H

@@ -12,7 +12,7 @@ using namespace std;
 
 Piece::Piece(ChessElementColor color, string imgFilename, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
 	: ChessElement(color, imgFilename, nullptr, srcRect, dstRect, name), 
-	  currPosInBoard(Position()), initialPosInBoard(Position()) {
+	  currPosInBoard(Position()), initialPosInBoard(Position()), hasBeenMovedOnce(false) {
 
 }
 
@@ -54,11 +54,11 @@ void Piece::setDstRect() {
 
 void Piece::setCurrPosInPixels(Position pos, bool updatePosInBoard) {
 
-	if (pos.x < 0 || pos.x >= CANVAS_WIDTH || pos.y < 0 || pos.y >= CANVAS_HEIGHT) {
+	/*if (pos.x < 0 || pos.x >= CANVAS_WIDTH || pos.y < 0 || pos.y >= CANVAS_HEIGHT) {
 		cerr << "Wrong positioning of the piece " << imgFilename << "inside setCurrPosInPixels(). ";
 		cerr << "Received (" << pos.x << ", " << pos.y << ") as argument" << endl;
 		return;
-	}
+	}*/
 
 	this->currPosInPixels = pos;
 	

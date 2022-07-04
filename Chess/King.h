@@ -13,5 +13,6 @@ public:
 private:
 	static const string whiteKingFilename;
 	static const string blackKingFilename;
+	virtual vector<Position> calcMoves();
 };
 #endif // !KING_H

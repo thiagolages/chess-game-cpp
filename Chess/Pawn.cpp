@@ -11,7 +11,7 @@ Pawn::~Pawn() {
 }
 
 Pawn::Pawn(ChessElementColor color, string name) 
-	: Piece(color, "", nullptr, nullptr, name){
+	: Piece(color, "", nullptr, nullptr, name) {
 
 	imgFilename = (getColor() == ChessElementColor::WHITE ? whitePawnFilename : blackPawnFilename);
 	if (getColor() != ChessElementColor::WHITE && getColor() != ChessElementColor::BLACK) {
@@ -33,4 +33,18 @@ Pawn::Pawn(ChessElementColor color, string name)
 
 	// increment number of created pawns
 	getColor() == ChessElementColor::WHITE ? Pawn::whitePawnCounter++ : Pawn::blackPawnCounter++;
+}
+
+vector<Position> Pawn::calcMoves() {
+	vector<Position> vec;
+	// moving up (white) or down (black) the board
+	int dy = (color == ChessElementColor::WHITE ? -1 : 1);
+	
+	vec.push_back(Position(0, dy));
+	
+	// if pawn hasn't been moved, we can move it 2 squares
+	if (!hasBeenMovedOnce) {
+		vec.push_back(Position(0, dy*2));
+	}
+	return vec;
 }

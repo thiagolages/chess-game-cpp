@@ -14,5 +14,6 @@ private:
 	static int whiteRookCounter, blackRookCounter; // to count number of created bishops and infere its position
 	static const string whiteRookFilename;
 	static const string blackRookFilename;
+	virtual vector<Position> calcMoves();
 };
 #endif // !ROOK_H

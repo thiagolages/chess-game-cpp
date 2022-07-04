@@ -39,3 +39,17 @@ Bishop::Bishop(ChessElementColor color, string name)
 }
 
 
+vector<Position> Bishop::calcMoves() {
+	
+	vector<Position> vec;
+
+	for (int delta = 1; delta < horizontalSquares; delta++) {
+		/* diagonals */
+		vec.push_back(Position( delta,  delta));
+		vec.push_back(Position( delta, -delta));
+		vec.push_back(Position(-delta,  delta));
+		vec.push_back(Position(-delta, -delta));
+	}
+
+	return vec;
+}

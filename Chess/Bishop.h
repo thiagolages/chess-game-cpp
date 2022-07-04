@@ -14,5 +14,6 @@ private:
 	static int whiteBishopCounter, blackBishopCounter; // to count number of created bishops and infere its position
 	static const string whiteBishopFilename;
 	static const string blackBishopFilename;
+	virtual vector<Position> calcMoves();
 };
 #endif // !BISHOP_H

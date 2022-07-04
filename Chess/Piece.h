@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;	
 
@@ -38,7 +39,7 @@ public:
 	~Piece();
 	void setSrcRect(SDL_Rect* srcRect);
 	void setDstRect();
-	void setCurrPosInPixels(Position, bool = true);
+	void setCurrPosInPixels(Position pos, bool updatePosInBoard = true);
 	void setCurrPosInBoard(Position);
 	void setInitialPosInBoard(Position);
 	SDL_Rect* getSrcRect();
@@ -49,12 +50,16 @@ public:
 	Position getInitialPosInBoard();
 	bool isLegalMove(Position);
 	void capturedPieceRoutine();
+	virtual vector<Position> calcMoves() =0; // derived classes must provide implementation
+
 public:
 	inline static const PieceSize	 pieceSize = { 100, 100 }; // { CANVAS_WIDTH / horizontalSquares, CANVAS_HEIGHT / verticalSquares };
+	bool			hasBeenMovedOnce;
 
 protected:
 	Position		currPosInBoard; // with respect to the board. (0,0) being 1st row, 1st column
 	Position		currPosInPixels; // with respect to the window
 	Position		initialPosInBoard;
+	
 };
 #endif // !CHESS_PIECE_H
