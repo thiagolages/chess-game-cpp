@@ -1,13 +1,14 @@
 #ifndef PAWN_H
 #define PAWN_H
 
+#include "Utils.h"
 #include "Piece.h"
 #include <string>
 
 class Pawn : public Piece {
 
 public:
-	Pawn(ChessElementColor color = ChessElementColor::NONE, string name = "Pawn");
+	Pawn(PieceColor color = PieceColor::NONE, string name = "Pawn");
 	~Pawn();
 
 private:
@@ -16,6 +17,6 @@ private:
 	inline static string blackPawnFilename = IMG_PIECES_DIR+"bp.png";*/
 	string whitePawnFilename = "images/pieces/wp.png";
 	string blackPawnFilename = "images/pieces/bp.png";
-	virtual vector<Position> calcMoves();
+	vector<Position> calcMoves();
 };
 #endif // !PAWN_H

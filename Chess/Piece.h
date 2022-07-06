@@ -1,14 +1,16 @@
 #ifndef CHESS_PIECE_H
 #define CHESS_PIECE_H
 
-#include "Utils.h"
 #include "ChessElement.h"
 #include <SDL.h>
 #include <iostream>
-#include <string>
 #include <vector>
 
-using namespace std;	
+using namespace std;
+
+enum class PieceColor { WHITE, BLACK, NONE };
+
+ostream& operator<< (ostream& out, const PieceColor color);
 
 enum class PieceType  { NONE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 
@@ -16,8 +18,12 @@ typedef struct Position {
 	int x, y;
 	Position() { x = -1; y = -1; }
 	Position(int xArg, int yArg) { x = xArg; y = yArg; }
+	
 	inline friend bool operator== (const Position& lhs, const Position& rhs) {
 		return (lhs.x == rhs.x && lhs.y == rhs.y);
+	}
+	inline friend bool operator!= (const Position& lhs, const Position& rhs) {
+		return (lhs.x != rhs.x || lhs.y != rhs.y);
 	}
 	inline friend ostream& operator<< (ostream& out, const Position& pos) {
 		out << "(" << pos.x << "," << pos.y << ")" << endl;
@@ -35,7 +41,7 @@ typedef struct PieceSize {
 class Piece : public ChessElement { 
 	
 public:
-	Piece(ChessElementColor color = ChessElementColor::NONE, string imgFilename = "", SDL_Rect* srcRect = NULL, SDL_Rect* dstRect = NULL, string name = "");
+	Piece(PieceColor color = PieceColor::NONE, string imgFilename = "", SDL_Rect* srcRect = NULL, SDL_Rect* dstRect = NULL, string name = "");
 	~Piece();
 	void setSrcRect(SDL_Rect* srcRect);
 	void setDstRect();
@@ -44,22 +50,23 @@ public:
 	void setInitialPosInBoard(Position);
 	SDL_Rect* getSrcRect();
 	SDL_Rect* getDstRect();
-	ChessElementColor getColor();
+	PieceColor getColor();
 	Position getCurrPosInPixels();
 	Position getCurrPosInBoard();
 	Position getInitialPosInBoard();
-	bool isLegalMove(Position);
 	void capturedPieceRoutine();
-	virtual vector<Position> calcMoves() =0; // derived classes must provide implementation
+	virtual vector<Position> calcMoves() = 0; // derived classes must provide implementation
+	//void move(Position newPos);
 
 public:
 	inline static const PieceSize	 pieceSize = { 100, 100 }; // { CANVAS_WIDTH / horizontalSquares, CANVAS_HEIGHT / verticalSquares };
 	bool			hasBeenMovedOnce;
+	PieceColor color;
 
 protected:
-	Position		currPosInBoard; // with respect to the board. (0,0) being 1st row, 1st column
-	Position		currPosInPixels; // with respect to the window
-	Position		initialPosInBoard;
+	Position initialPosInBoard;
+	Position currPosInBoard; // with respect to the board. (0,0) being 1st row, 1st column
+	Position currPosInPixels; // with respect to the window
 	
 };
 #endif // !CHESS_PIECE_H

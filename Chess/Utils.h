@@ -4,18 +4,28 @@
 #include <iostream>
 #include <string>
 #include <SDL.h>
-#include"ChessElement.h"
+#include <vector>
+//#include "Game.h"
 #include "Piece.h"
 
 using namespace std;
 
-const int GAME_FPS			= 60 ;
-const int CANVAS_WIDTH		= 800;
-const int CANVAS_HEIGHT		= 800;
+const int GAME_FPS = 60;
+const int CANVAS_WIDTH = 800;
+const int CANVAS_HEIGHT = 800;
 const int horizontalSquares = 8;
-const int verticalSquares	= 8;
-const string IMG_PIECES_DIR		= "images/pieces/";
-const string IMG_BOARDS_DIR		= "images/boards/";
+const int verticalSquares = 8;
+const string IMG_PIECES_DIR = "images/pieces/";
+const string IMG_BOARDS_DIR = "images/boards/";
+
+template<typename Base, typename T>
+inline bool instanceof(const T* ptr) {
+	return dynamic_cast<const Base*>(ptr) != nullptr;
+}
+
+bool isWithinBoardLimits(Position xyPos);
+
+bool isWithinBoardLimits(int x, int y);
 
 //
 //ostream& operator<< (ostream& out, const SDL_Rect* rec) {
@@ -27,16 +37,16 @@ const string IMG_BOARDS_DIR		= "images/boards/";
 //	return out;
 //}
 //
-//ostream& operator<< (ostream& out, const ChessElementColor color) {
+//ostream& operator<< (ostream& out, const PieceColor color) {
 //
 //	switch (color) {
-//	case ChessElementColor::WHITE:
+//	case PieceColor::WHITE:
 //		out << "WHITE";
 //		break;
-//	case ChessElementColor::BLACK:
+//	case PieceColor::BLACK:
 //		out << "BLACK";
 //		break;
-//	case ChessElementColor::NONE:
+//	case PieceColor::NONE:
 //		out << "NONE";
 //		break;
 //	default:
@@ -44,5 +54,7 @@ const string IMG_BOARDS_DIR		= "images/boards/";
 //	}
 //	return out;
 //}
+
+
 
 #endif // !UTILS_H

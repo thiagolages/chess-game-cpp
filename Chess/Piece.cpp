@@ -7,30 +7,52 @@
 
 using namespace std;
 
+
 //string Piece::pieceBaseFileDir		= "images/pieces/";
 //string Piece::pieceBaseFileExtension	= ".png";
 
-Piece::Piece(ChessElementColor color, string imgFilename, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
-	: ChessElement(color, imgFilename, nullptr, srcRect, dstRect, name), 
-	  currPosInBoard(Position()), initialPosInBoard(Position()), hasBeenMovedOnce(false) {
 
+ostream& operator<< (ostream& out, const PieceColor color) {
+
+	switch (color) {
+	case PieceColor::WHITE:
+		out << "WHITE";
+		break;
+	case PieceColor::BLACK:
+		out << "BLACK";
+		break;
+	case PieceColor::NONE:
+		out << "NONE";
+		break;
+	default:
+		break;
+	}
+	return out;
+}
+
+Piece::Piece(PieceColor color, string imgFilename, SDL_Rect* srcRect, SDL_Rect* dstRect, string name)
+	: ChessElement(imgFilename, nullptr, srcRect, dstRect, name), 
+	  currPosInBoard(Position()), initialPosInBoard(Position()), 
+	  hasBeenMovedOnce(false), color(color) {
 }
 
 Piece::~Piece() {
 }
 
-bool Piece::isLegalMove(Position posInBoard) {
-	if (posInBoard.x < 0 || posInBoard.x >= 8
-	 || posInBoard.y < 0 || posInBoard.y >= 8) {
-		return false;
-	}
-	// will be implemented later on each derived class
-	return true;
+vector<Position> Piece::calcMoves() {
+	vector<Position> vec;
+	return (vec); // return empty vector; will be implemented in derived classes. virtual functions will be implemented later
 }
+
+//void Piece::move(Position newPos) {
+//	if Game::isWithinBoardLimitsnewPos)) {
+//		setCurrPosInBoard(newPos);
+//	}
+//}
 
 void Piece::capturedPieceRoutine() {
 	this->hasBeenCaptured = true;
-	this->currPosInBoard  = { -1, -1 };
+	this->currPosInBoard = { -1, -1 };
 	this->currPosInPixels = { -1, -1 };
 }
 
@@ -116,7 +138,7 @@ SDL_Rect* Piece::getDstRect() {
 	return this->dstRect;
 }
 
-ChessElementColor Piece::getColor() {
+PieceColor Piece::getColor() {
 	return this->color;
 }
 

@@ -1,4 +1,15 @@
-//#include"Utils.h"
+#include"Utils.h"
+
+bool isWithinBoardLimits(Position xyPos) {
+	return (xyPos.x >= 0 && xyPos.x < horizontalSquares
+		&& xyPos.y >= 0 && xyPos.y < verticalSquares);
+}
+
+bool isWithinBoardLimits(int x, int y) {
+	return (x >= 0 && x < horizontalSquares
+		&& y >= 0 && y < verticalSquares);
+}
+
 //
 //const int GAME_FPS = 60;
 //const int CANVAS_WIDTH = 800;
@@ -19,16 +30,16 @@
 //	return out;
 //}
 //
-//ostream& operator<< (ostream& out, const ChessElementColor color) {
+//ostream& operator<< (ostream& out, const PieceColor color) {
 //	
 //	switch (color){
-//		case ChessElementColor::WHITE:
+//		case PieceColor::WHITE:
 //			out << "WHITE";
 //			break;
-//		case ChessElementColor::BLACK:
+//		case PieceColor::BLACK:
 //			out << "BLACK";
 //			break;
-//		case ChessElementColor::NONE:
+//		case PieceColor::NONE:
 //			out << "NONE";
 //			break;
 //		default:

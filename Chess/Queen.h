@@ -1,18 +1,19 @@
 #ifndef QUEEN_H
 #define QUEEN_H
 
+#include "Utils.h"
 #include "Piece.h"
 #include <string>
 
 class Queen : public Piece {
 
 public:
-	Queen(ChessElementColor color = ChessElementColor::NONE, string name="Queen");
+	Queen(PieceColor color = PieceColor::NONE, string name="Queen");
 	~Queen();
 
 private:
 	static const string whiteQueenFilename;
 	static const string blackQueenFilename;
-	virtual vector<Position> calcMoves();
+	vector<Position> calcMoves();
 };
 #endif // !QUEEN_H

@@ -1,4 +1,3 @@
-#include "Utils.h"
 #include "Knight.h"
 #include <iostream>
 
@@ -10,54 +9,56 @@ const string Knight::blackKnightFilename = IMG_PIECES_DIR + "bn.png";
 
 using namespace std;
 
+
 Knight::~Knight() {
 }
 
-Knight::Knight(ChessElementColor color, string name)
+Knight::Knight(PieceColor color, string name)
 	: Piece(color, "", nullptr, nullptr, name) {
 
-	imgFilename = (getColor() == ChessElementColor::WHITE ? whiteKnightFilename : blackKnightFilename);
+	imgFilename = (getColor() == PieceColor::WHITE ? whiteKnightFilename : blackKnightFilename);
 
-	if (getColor() != ChessElementColor::WHITE && getColor() != ChessElementColor::BLACK) {
+	if (getColor() != PieceColor::WHITE && getColor() != PieceColor::BLACK) {
 		cerr << "Wrong color passed to Knight constructor !" << endl;
 	}
 
-	int counter = getColor() == ChessElementColor::WHITE ? whiteKnightCounter : blackKnightCounter;	// get correct Knight counter to infere correct position
-	int yRow = getColor() == ChessElementColor::WHITE ? 7 : 0;									// spawn Knights on 8nd or 1th row (indexes 7 or 0)
+	int counter = getColor() == PieceColor::WHITE ? whiteKnightCounter : blackKnightCounter;	// get correct Knight counter to infere correct position
+	int yRow = getColor() == PieceColor::WHITE ? 7 : 0;									// spawn Knights on 8nd or 1th row (indexes 7 or 0)
 
 	Position pos;
 	pos.x = counter == 0 ? 1 * CANVAS_WIDTH / 8 : 6 * CANVAS_WIDTH / 8;
 	pos.y = yRow * CANVAS_HEIGHT / 8;
 
 	setCurrPosInPixels(pos);
-	Position posInBoard = { pos.x / Piece::pieceSize.w, pos.y / Piece::pieceSize.h };
-	setInitialPosInBoard(posInBoard);
+	Position boardPos = { pos.x / Piece::pieceSize.w, pos.y / Piece::pieceSize.h };
+	setInitialPosInBoard(boardPos);
 
-	cout << "setting " << name << "initial position to " << getInitialPosInBoard() << endl;
+	cout << "setting " << name << " initial position to " << getInitialPosInBoard() << endl;
 	
 	// increment number of created knights
-	getColor() == ChessElementColor::WHITE ? Knight::whiteKnightCounter++ : Knight::blackKnightCounter++;
+	getColor() == PieceColor::WHITE ? Knight::whiteKnightCounter++ : Knight::blackKnightCounter++;
 }
 
 vector<Position> Knight::calcMoves() {
 
 	vector<Position> vec;
+	Position curr = getCurrPosInBoard();
 
 	/* right */
-	vec.push_back(Position(2,  1));
-	vec.push_back(Position(2, -1));
+	vec.push_back(Position(curr.x + 2, curr.y + 1));
+	vec.push_back(Position(curr.x + 2, curr.y - 1));
 
 	/* left */
-	vec.push_back(Position(-2,  1));
-	vec.push_back(Position(-2, -1));
+	vec.push_back(Position(curr.x - 2, curr.y + 1));
+	vec.push_back(Position(curr.x - 2, curr.y - 1));
 
 	/* down */
-	vec.push_back(Position( 1, 2));
-	vec.push_back(Position(-1, 2));
+	vec.push_back(Position(curr.x + 1, curr.y + 2));
+	vec.push_back(Position(curr.x - 1, curr.y + 2));
 
 	/* up */
-	vec.push_back(Position( 1, -2));
-	vec.push_back(Position(-1, -2));
+	vec.push_back(Position(curr.x + 1, curr.y - 2));
+	vec.push_back(Position(curr.x - 1, curr.y - 2));
 
 	return vec;
 }

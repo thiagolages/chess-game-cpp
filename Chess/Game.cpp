@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 const int maxNumPawns		= 8;
 const int maxNumMiddlePieces= 2;
 
@@ -27,16 +28,16 @@ const int maxNumMiddlePieces= 2;
 //	return out;
 //}
 //
-//ostream& operator<< (ostream& out, const ChessElementColor color) {
+//ostream& operator<< (ostream& out, const PieceColor color) {
 //
 //	switch (color) {
-//	case ChessElementColor::WHITE:
+//	case PieceColor::WHITE:
 //		out << "WHITE";
 //		break;
-//	case ChessElementColor::BLACK:
+//	case PieceColor::BLACK:
 //		out << "BLACK";
 //		break;
-//	case ChessElementColor::NONE:
+//	case PieceColor::NONE:
 //		out << "NONE";
 //		break;
 //	default:
@@ -48,32 +49,32 @@ const int maxNumMiddlePieces= 2;
 Game::Game(bool closeGame, SDL_Renderer *rend, SDL_Window *window) 
 :	closeGame(closeGame), rend(rend), window(window), 
 	windowTexture(nullptr), currClickedPiece(nullptr),
-	colorTurn(ChessElementColor::WHITE) {
+	colorTurn(PieceColor::WHITE), mouseIsPressed(false) {
 	
 	///* Board */
 	board = new Board();
 
 	///* Pieces */
 	for (int i = 0; i < 8; i++) {
-		allPieces.push_back(new Pawn (ChessElementColor::WHITE, "White Pawn"    + to_string(i)));
-		allPieces.push_back(new Pawn (ChessElementColor::BLACK, "Black Pawn"    + to_string(i)));
+		allPieces.push_back(new Pawn (PieceColor::WHITE, "White Pawn"    + to_string(i)));
+		allPieces.push_back(new Pawn (PieceColor::BLACK, "Black Pawn"    + to_string(i)));
 	}
 	for (int i = 0; i < 2; i++) {
-		allPieces.push_back(new Bishop(ChessElementColor::WHITE, "White Bishop" + to_string(i)));
-		allPieces.push_back(new Bishop(ChessElementColor::BLACK, "Black Bishop" + to_string(i)));
+		allPieces.push_back(new Bishop(PieceColor::WHITE, "White Bishop" + to_string(i)));
+		allPieces.push_back(new Bishop(PieceColor::BLACK, "Black Bishop" + to_string(i)));
 		
-		allPieces.push_back(new Knight(ChessElementColor::WHITE, "White Knight" + to_string(i)));
-		allPieces.push_back(new Knight(ChessElementColor::BLACK, "Black Knight" + to_string(i)));
+		allPieces.push_back(new Knight(PieceColor::WHITE, "White Knight" + to_string(i)));
+		allPieces.push_back(new Knight(PieceColor::BLACK, "Black Knight" + to_string(i)));
 		
-		allPieces.push_back(new Rook  (ChessElementColor::WHITE, "White Rook"   + to_string(i)));
-		allPieces.push_back(new Rook  (ChessElementColor::BLACK, "Black Rook"   + to_string(i)));
+		allPieces.push_back(new Rook  (PieceColor::WHITE, "White Rook"   + to_string(i)));
+		allPieces.push_back(new Rook  (PieceColor::BLACK, "Black Rook"   + to_string(i)));
 	}
 
-	allPieces.push_back(new Queen(ChessElementColor::WHITE, "White Queen"));
-	allPieces.push_back(new Queen(ChessElementColor::BLACK, "Black Queen"));
+	allPieces.push_back(new Queen(PieceColor::WHITE, "White Queen"));
+	allPieces.push_back(new Queen(PieceColor::BLACK, "Black Queen"));
 
-	allPieces.push_back(new King(ChessElementColor::WHITE, "White King"));
-	allPieces.push_back(new King(ChessElementColor::BLACK, "Black King"));
+	allPieces.push_back(new King(PieceColor::WHITE, "White King"));
+	allPieces.push_back(new King(PieceColor::BLACK, "Black King"));
 }
 
 Game::~Game() {
@@ -141,48 +142,25 @@ void Game::renderLegalMoves(Piece* piece) {
 	
 	vector<Position> positions = piece->calcMoves();
 	for (auto &pos : positions) {
-		Position finalPos(	piece->getCurrPosInBoard().x + pos.x,
-							piece->getCurrPosInBoard().y + pos.y);
-		render(finalPos);
+		renderCircle(pos);
 	}
 }
 
-void Game::render(Position posInBoard) {
-	if (posInBoard.x < 0 || posInBoard.x > horizontalSquares
-	 || posInBoard.y < 0 || posInBoard.y > verticalSquares) {
+void Game::renderCircle(Position boardPos) {
+	if (boardPos.x < 0 || boardPos.x > horizontalSquares
+	 || boardPos.y < 0 || boardPos.y > verticalSquares) {
+		cout << "can't render position " << boardPos << endl;
 		return;
 	}
 	
-	int radius = Piece::pieceSize.w / 4;
-	cout << "rendering " << posInBoard << " with radius " << radius << endl;
-	// get current piece position to sum with deltas received, and adjust for the center of the square
-	Position posInPixels(posInBoard.x * Piece::pieceSize.w + Piece::pieceSize.w / 2,
-						 posInBoard.y * Piece::pieceSize.h + Piece::pieceSize.h / 2);
+	int radius = Piece::pieceSize.w / 6;
+	cout << "rendering " << boardPos << " with radius " << radius << endl;
+	// convert position to pixels and adjust for the center of the square
+	Position posInPixels(boardPos.x * Piece::pieceSize.w + Piece::pieceSize.w / 2,
+						 boardPos.y * Piece::pieceSize.h + Piece::pieceSize.h / 2);
 	drawCircle(posInPixels, radius);
 
 	show();
-
-	//SDL_Texture* texture = IMG_LoadTexture(rend, "redSquare.png");
-
-	// enhance the quality of the texture
-	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
-	/*if (texture == NULL) {
-		std::cout << "couldnt create texture from surface " << std::endl;
-		cout << IMG_GetError() << endl;
-		return;
-	}*/
-
-	/*SDL_Rect* dstRect = new SDL_Rect({ posInBoard.x,
-							posInBoard.y,
-							Piece::pieceSize.w,
-							Piece::pieceSize.h
-		});*/
-
-	//SDL_RenderCopy(rend, texture, nullptr, dstRect);
-
-	//delete dstRect;
-	//SDL_DestroyTexture(texture);
 }
 
 void Game::render(ChessElement* ce) {
@@ -205,8 +183,6 @@ void Game::render(ChessElement* ce) {
 	}
 
 	SDL_RenderCopy(rend, ce->texture, ce->srcRect, ce->dstRect);
-
-	//delete ce->texture;
 }
 
 // https://stackoverflow.com/questions/38334081/howto-draw-circles-arcs-and-vector-graphics-in-sdl
@@ -254,16 +230,28 @@ void Game::drawCircle(Position center, int radius){
 void Game::reset() {
 	for (auto piece : allPieces) {
 		piece->setCurrPosInBoard(piece->getInitialPosInBoard());
-		piece->hasBeenCaptured = false;
+		piece->hasBeenCaptured  = false;
+		piece->hasBeenMovedOnce = false;
 	}
+	colorTurn = PieceColor::WHITE;
+}
+
+Piece* Game::pixelPositionToPiece(const Position pos) {
+	return (pixelPositionToPiece(pos.x, pos.y));
 }
 
 Piece* Game::pixelPositionToPiece(const int& xPosInPixels, const int& yPosInPixels) {
 
-	Position posInBoard = Position(xPosInPixels / Piece::pieceSize.w, 
-								  yPosInPixels / Piece::pieceSize.w);
+	Position boardPos = Position(xPosInPixels / Piece::pieceSize.w, 
+								   yPosInPixels / Piece::pieceSize.w);
+	
+	return (boardPositionToPiece(boardPos));
+}
+
+Piece* Game::boardPositionToPiece(const Position boardPos) {
+
 	for (auto e : allPieces) {
-		if (posInBoard == e->getCurrPosInBoard()) {
+		if (boardPos == e->getCurrPosInBoard()) {
 			return e;
 		}
 	}
@@ -281,10 +269,12 @@ void Game::handleEvents(SDL_Event& event) {
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		if (event.button.button == SDL_BUTTON_LEFT) {
+			this->mouseIsPressed = true;
 			this->handleMouseButtonDown(event);
 		}
 		break;
 	case SDL_MOUSEBUTTONUP:
+		this->mouseIsPressed = false;
 		this->handleMouseButtonUp(event);
 		break;
 	case SDL_MOUSEMOTION:
@@ -348,48 +338,47 @@ void Game::handleMouseButtonUp(SDL_Event& event) {
 		return;
 	}
 
-	cout << "currClickedPiece = " << currClickedPiece->getName() << endl;
-
 	bool shouldChangeTurns = true; // auxiliary to change turns or not
 
 	int xPosInPixels, yPosInPixels;
 	SDL_GetMouseState(&xPosInPixels, &yPosInPixels);
-
 	Position posInPixels = { xPosInPixels, yPosInPixels };
-	Position posInBoard  = { xPosInPixels / Piece::pieceSize.w, yPosInPixels / Piece::pieceSize.h };
+	Position boardPos  = { xPosInPixels / Piece::pieceSize.w, yPosInPixels / Piece::pieceSize.h };
 
-	Piece* targetPiece = pixelPositionToPiece(xPosInPixels, yPosInPixels);
-	cout << "curr piece is " << currClickedPiece->getName() << endl;
+	Piece* targetPiece = pixelPositionToPiece(posInPixels);
 	if (targetPiece) {
 		cout << "target piece is " << targetPiece->getName() << endl;
 	}else{ cout << "target piece is nullptr"<< endl; }
 	
+	cout << "boardPos before isLegalMove" << boardPos << endl;
 	// check legal moves
-	if (!currClickedPiece->isLegalMove(posInBoard)) {
+	if (!isLegalMove(currClickedPiece, boardPos)) {
 		// must render back to original position
+		currClickedPiece->setCurrPosInBoard(currClickedPiece->getCurrPosInBoard());// return to the same position it was in the board
+		shouldChangeTurns = false; // nothing really happened, so don't change turns
+		currClickedPiece = nullptr;
 		// and then return
 		return;
 	}
 
-	// if nothing in the square, or if putting same piece back on it
+	// if nothing in the square
 	if (targetPiece == nullptr ) {
-		// put the piece in the square where the mouse stopped
-		currClickedPiece->setCurrPosInBoard(posInBoard);
+		// move
+		currClickedPiece->setCurrPosInBoard(boardPos);
 		currClickedPiece->hasBeenMovedOnce = true;
 	}
-	else {
-		// check capture or not
+	else { // check capture or not
 		if (isDifferentColor(currClickedPiece, targetPiece)) {
 			// capture
 			cout << "different color pieces" << endl;
 			targetPiece->capturedPieceRoutine();
-			currClickedPiece->setCurrPosInBoard(posInBoard);
+			currClickedPiece->setCurrPosInBoard(boardPos);
 			currClickedPiece->hasBeenMovedOnce = true;
 		}
-		else { // not a capture
-			cout << "same color pieces" << endl;
-			// return to the same position it was in the board
-			currClickedPiece->setCurrPosInBoard(currClickedPiece->getCurrPosInBoard());
+		else { 
+			// not a capture
+			cout << "same color pieces" << endl;			
+			currClickedPiece->setCurrPosInBoard(currClickedPiece->getCurrPosInBoard());// return to the same position it was in the board
 			shouldChangeTurns = false; // nothing really happened, so don't change turns
 		}
 	}
@@ -405,7 +394,7 @@ void Game::handleMouseButtonUp(SDL_Event& event) {
 }
 
 void Game::changeTurns() {
-	this->colorTurn = (this->colorTurn == ChessElementColor::WHITE ? ChessElementColor::BLACK : ChessElementColor::WHITE);
+	this->colorTurn = (this->colorTurn == PieceColor::WHITE ? PieceColor::BLACK : PieceColor::WHITE);
 }
 
 bool Game::isYourTurn() {
@@ -419,4 +408,274 @@ bool Game::isDifferentColor(Piece* p1, Piece* p2) {
 
 bool Game::isDifferentPiece(Piece* p1, Piece* p2){
 	return (p1 != p2);
+}
+
+bool Game::isInSameDiagonal(Position p1, Position p2) {
+	return (abs(p1.x - p2.x) == abs(p1.y - p2.y));
+}
+
+bool Game::isInSameColumn(Position p1, Position p2) {
+	return (p1.x == p2.x);
+}
+
+bool Game::isInSameRow(Position p1, Position p2) {
+	return (p1.y == p2.y);
+}
+
+bool Game::isLegalMove(Piece* piece, Position boardPos) {
+
+	if (!isWithinBoardLimits(boardPos)) {
+		cout << "Position in board " << boardPos << " outside board limits" << endl;
+		return false;
+	}
+	cout << "isWithinBoardLimits" << endl;
+
+	cout << "boardPos before piececanmakemove = " << boardPos << endl;
+	// piece has to be able to move to that position
+	if (!pieceCanMakeMove(piece, boardPos)) { cout << piece->getName()<<" can't make move." << endl; return false; }
+	cout << "pieceCanMakeMove" << endl;
+
+	// make sure no piece is in front of the squares we're moving throught, except for the knight
+	if (theresAPieceBetween(piece, boardPos)) { cout << "There's a piece between." << endl; return false; }
+	cout << "theres NOT APieceBetween, so we're OK" << endl;
+
+	// verify if my own king wont be in check after I move
+	if (!isKingSafeAfterMove(piece, boardPos)) { cout << piece->getColor()<<" King is not safe if you make that move." << endl; return false; }
+	cout << "isKingSafeAfterMove" << endl;
+
+	// if there's no piece in the way
+	if (!theresAPieceIn(boardPos)) { cout << "There's NOT a piece between." << endl; return true; }
+	cout << "there IS APieceIn the final position. Let's check if it's a capture or illegal move" << endl;
+
+	// if there's a piece in the way, but it is of the same color
+	Piece* auxPiece = boardPositionToPiece(boardPos);
+
+	if (auxPiece->getColor() == piece->getColor()) {
+		cout << "piece of the same color, cant move!" << endl;
+		return false;
+	}
+
+	// if nothing else returned, means we have an enemy piece and we can move (to capture it)
+	cout << "isLegalMove !" << endl;
+	return true;
+}
+
+bool Game::pieceCanMakeMove(Piece* piece, Position boardPos) {
+	for (auto& move : piece->calcMoves()) {
+		if (move == boardPos) {
+			return true;
+		}
+	}
+	// if we didn't return true before, we can't reach that position
+	return false;
+}
+
+bool Game::theresAPieceIn(Position boardPos) {
+	
+	Position pixelPos = {
+		boardPos.x * Piece::pieceSize.w,
+		boardPos.y * Piece::pieceSize.h,
+	};
+	Piece*   auxPiece = pixelPositionToPiece(pixelPos);
+
+	return (auxPiece == nullptr ? false : true);
+}
+
+bool Game::theresAPieceBetween(Piece* piece, Position dstPos) {
+	
+	vector<Position> positionsInBetween;
+	Position piecePos = piece->getCurrPosInBoard();
+	
+	// if in same file (column) (x coord)
+	if (isInSameColumn(piecePos, dstPos)) {
+		int initialYPos = min(piecePos.y, dstPos.y) + 1; // adding 1 so we dont include the current y value (since we're looking for in-between squares)
+		int finalYPos   = max(piecePos.y, dstPos.y);
+		
+		if (finalYPos <= initialYPos) { return false; } // squares are adjacent
+
+		finalYPos -= 1; // subtrc 1 so we dont include the current y value (since we're looking for in-between squares)
+
+		for (int ypos = initialYPos; ypos <= finalYPos; ypos++) {
+			positionsInBetween.push_back(Position(piecePos.x, ypos));
+		}
+	}
+	// if in same row (y coord)
+	else if (isInSameRow(piecePos, dstPos)) {
+		int initialXPos = min(piecePos.x, dstPos.x) + 1; // adding 1 so we dont include the current y value (since we're looking for in-between squares)
+		int finalXPos	= max(piecePos.x, dstPos.x);
+
+		if (finalXPos <= initialXPos) { return false; } // squares are adjacent
+
+		finalXPos -= 1; // subtrc 1 so we dont include the current y value (since we're looking for in-between squares)
+
+		for (int xpos = initialXPos; xpos <= finalXPos; xpos++) {
+			positionsInBetween.push_back(Position(xpos, piecePos.y));
+		}
+	}// if in same diagonal
+	else if (isInSameDiagonal(piecePos, dstPos)) {
+		int xIncr = (piecePos.x < dstPos.x ? 1 : -1);
+		int yIncr = (piecePos.y < dstPos.y ? 1 : -1);
+
+		Position auxPos = piecePos;
+		auxPos.x += xIncr;
+		auxPos.y += yIncr;
+
+		if (auxPos == dstPos) { return false; } // squares are adjacent
+
+		Position auxFinalPos = dstPos;
+		auxFinalPos.x -= xIncr;
+		auxFinalPos.y -= yIncr;
+		
+		// at least this square is in between
+		positionsInBetween.push_back(auxPos);
+
+		while (auxPos != auxFinalPos) {	// while we haven't reached the last square in between
+			auxPos.x += xIncr;
+			auxPos.y += yIncr;
+			positionsInBetween.push_back(auxPos);
+		}
+	}
+	else {
+		// if not in same row, column or diag, either knight move or illegal (will be checked in other functions)
+		cout << "Piece not in the same row, column or diagonal" << endl;
+		return false;
+	}
+
+	for (auto& pos : positionsInBetween) {
+		if (theresAPieceIn(pos)) {
+			return true;
+		}
+	}
+	// if there's nothing
+	return false;
+}
+
+bool  Game::isKingSafeAfterMove(Piece* piece, Position dstPos) {
+	
+	Position kingPos = Position();
+	bool kingFound = false;
+
+	PieceColor pieceColor = piece->getColor();
+	for (auto& p : allPieces) {
+		if (instanceof<King>(p) && p->getColor() == pieceColor) {
+			kingPos = p->getCurrPosInBoard();
+			kingFound = true;
+			break;
+		}
+	}
+
+	if (!kingFound) {
+		cerr << pieceColor << " King not found ! Can't check for king safety." << endl;
+		return false;
+	}
+
+	Position piecePos = piece->getCurrPosInBoard();
+	
+	Position auxPos = kingPos;
+
+	// auxiliaries to iterate on rows, cols or diags
+	int dx = 0;
+	int dy = 0;
+
+	/* if piece is in same (row/column/diag) and we move it to same (row/column/diag), there is no danger */
+	if (isInSameDiagonal(piecePos, kingPos)) {
+		if (isInSameDiagonal(dstPos, kingPos)) return true; 
+		cout << "testing for pice between " << piece->getName() << " and " << kingPos << endl;
+		if (theresAPieceBetween(piece, kingPos)) { cout << "there is a piece !" << endl;return true;}
+	}
+	else if (isInSameRow(piecePos, kingPos)) {
+		if (isInSameRow(dstPos, kingPos)) return true;
+		cout << "testing for pice between " << piece->getName() << " and " << kingPos << endl;
+		if (theresAPieceBetween(piece, kingPos)) { cout << "there is a piece !" << endl;return true; }
+	}
+	else if (isInSameColumn(piecePos, kingPos)) {
+		if (isInSameColumn(dstPos, kingPos)) return true;
+		cout << "testing for pice between " << piece->getName() << " and " << kingPos << endl;
+		if (theresAPieceBetween(piece, kingPos)) { cout << "there is a piece !" << endl;return true; }
+	}
+	else {// if piece is not in same diagonal, row or col, it won't make its own king stay in a check position
+		return true;
+	}
+	/*-------------------------------------------------------------------------------------------------------*/
+
+	Piece* auxPiece = nullptr;
+
+	// check in which diagonal the piece is with respect to the king
+	if (isInSameDiagonal(piecePos, kingPos)) {
+		dx = (piecePos.x > kingPos.x ? 1 : -1); 
+		dy = (piecePos.y > kingPos.y ? 1 : -1);
+	}
+	else if (isInSameRow(piecePos, kingPos)) {
+		dx = (piecePos.x > kingPos.x ? 1 : -1);
+		dy = 0;
+	}
+	else if (isInSameColumn(piecePos, kingPos)) {
+		dx = 0;
+		dy = (piecePos.y > kingPos.y ? 1 : -1);
+	}
+
+	// if we add dx and dy to the king's position (stored in auxPos now), we will check the next square in the same (row/col/diag)
+	auxPos.x += dx;
+	auxPos.y += dy;
+
+	if (dx == 0 && dy == 0) {
+		cerr << "Something went wrong in  Game::isKingSafeAfterMove()" << endl;
+		auxPiece = nullptr;
+		delete auxPiece;
+		return false; 
+	}
+
+	while (isWithinBoardLimits(auxPos)) {
+		auxPiece = nullptr; // reset it from last iteration
+		auxPiece = boardPositionToPiece(auxPos);
+		if (auxPiece) { // there's a piece
+
+			if (auxPiece == piece) {  // if the selected piece is the same that we're trying to move, continue in the loop
+				auxPos.x += dx;
+				auxPos.y += dy;
+				continue;
+			}
+
+			if (auxPiece->getColor() != piece->getColor()) { // there's an enemy piece
+
+				vector<Position> possibleMoves = auxPiece->calcMoves();
+				for (auto& move : possibleMoves) {
+					if (move == kingPos) {
+						// the enemy piece can attack our king
+						auxPiece = nullptr;
+						delete auxPiece;
+						return false;
+					}
+				}
+				// the enemy piece CANNOT attack our king
+				auxPiece = nullptr;
+				delete auxPiece;
+				return true;
+
+			}
+			else { // there's a piece of same color
+
+				// if there's one piece between our king and the enemy piece, we're good
+				auxPiece = nullptr;
+				delete auxPiece;
+				return true;
+			}
+		}
+		// go to next iteration
+		auxPos.x += dx;
+		auxPos.y += dy;
+	}
+
+	auxPiece = nullptr;
+	delete auxPiece;
+	// if we reached the end of the board and havent returned, we're safe
+	return true;
+
+}
+
+Position Game::pixelPosToBoardPos(Position pixelPos) {
+	return (Position(
+		pixelPos.x / Piece::pieceSize.w,
+		pixelPos.y / Piece::pieceSize.h
+	));
 }
