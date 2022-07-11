@@ -18,5 +18,6 @@ private:
 	string whitePawnFilename = "images/pieces/wp.png";
 	string blackPawnFilename = "images/pieces/bp.png";
 	vector<Position> calcMoves();
+	vector<Position> calcCaptures(); // this will override the default implementation, which only calls calcMoves()
 };
 #endif // !PAWN_H

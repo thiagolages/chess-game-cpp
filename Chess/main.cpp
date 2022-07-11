@@ -39,8 +39,8 @@ int main(int argc, char* argv[]){
 			game.handleEvents(event);
 		}
 
-		game.renderAllElements();
-		SDL_Delay(1000 / GAME_FPS);
+		game.renderAll();
+		//SDL_Delay(1000 / GAME_FPS);
 	}
 
 	cout << "running memory leaks()" << endl;

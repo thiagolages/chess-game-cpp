@@ -49,7 +49,8 @@ const int maxNumMiddlePieces= 2;
 Game::Game(bool closeGame, SDL_Renderer *rend, SDL_Window *window) 
 :	closeGame(closeGame), rend(rend), window(window), 
 	windowTexture(nullptr), currClickedPiece(nullptr),
-	colorTurn(PieceColor::WHITE), mouseIsPressed(false) {
+	colorTurn(PieceColor::WHITE), mouseIsPressed(false),
+	showLegalMoves(false) {
 	
 	///* Board */
 	board = new Board();
@@ -117,50 +118,78 @@ void Game::gameSDL_init() {
 
 }
 
-void Game::renderAllElements() {
+void Game::renderAll() {
 	
-	// CHANGE THIS SO THAT CHESSELEMENT HAS A VIRTUAL FUNCTION CALLED setCurrPosInPixels
 	SDL_RenderClear(rend);
 	render(board);
 
+	renderAllElements();
+	renderLegalMoves();
+	if (currClickedPiece) {
+		render(currClickedPiece); // make clicked piece appear on top of all others
+	}
+	show();
+}
+
+void Game::renderAllElements() {
 	for (auto piece : allPieces) {
 		render(piece);
 	}
-
-	// if there's a piece clicked, render it last so it appears on top of everyone else
-	if (currClickedPiece) {
-		render(currClickedPiece);
-	}
-	show();
 }
 
 void Game::show() {
 	SDL_RenderPresent(rend);
 }
 
-void Game::renderLegalMoves(Piece* piece) {
-	
-	vector<Position> positions = piece->calcMoves();
-	for (auto &pos : positions) {
-		renderCircle(pos);
+void Game::renderLegalMoves() {
+
+	if (showLegalMoves) {
+		for (auto& move : legalMoves) {
+			renderCircle(move);
+		}
 	}
 }
 
-void Game::renderCircle(Position boardPos) {
+void Game::calcLegalMoves(Piece* piece) {
+
+	vector<Position> moves = piece->calcMoves();
+	for (auto &move : moves) {
+		if (isLegalMove(piece, move)) {
+			legalMoves.push_back(move);
+			showLegalMoves = true;
+		}
+	}
+	// do the same for capture moves, if different
+	if (instanceof<Pawn>(piece)) {
+		moves = piece->calcCaptures();
+		for (auto& move : moves) {
+			if (isLegalMove(piece, move)) {
+				legalMoves.push_back(move);
+				showLegalMoves = true;
+			}
+		}
+	}
+}
+
+void Game::clearLegalMoves() {
+	showLegalMoves = false;
+	legalMoves.clear();
+}
+
+void Game::renderCircle(Position boardPos, int radius) {
+	
 	if (boardPos.x < 0 || boardPos.x > horizontalSquares
 	 || boardPos.y < 0 || boardPos.y > verticalSquares) {
 		cout << "can't render position " << boardPos << endl;
 		return;
 	}
-	
-	int radius = Piece::pieceSize.w / 6;
-	cout << "rendering " << boardPos << " with radius " << radius << endl;
+
 	// convert position to pixels and adjust for the center of the square
 	Position posInPixels(boardPos.x * Piece::pieceSize.w + Piece::pieceSize.w / 2,
-						 boardPos.y * Piece::pieceSize.h + Piece::pieceSize.h / 2);
-	drawCircle(posInPixels, radius);
+		boardPos.y * Piece::pieceSize.h + Piece::pieceSize.h / 2);
 
-	show();
+	drawCircle(posInPixels, radius);
+	
 }
 
 void Game::render(ChessElement* ce) {
@@ -185,46 +214,75 @@ void Game::render(ChessElement* ce) {
 	SDL_RenderCopy(rend, ce->texture, ce->srcRect, ce->dstRect);
 }
 
-// https://stackoverflow.com/questions/38334081/howto-draw-circles-arcs-and-vector-graphics-in-sdl
-void Game::drawCircle(Position center, int radius){
+void Game::drawCircle(Position centerInPixels, int radius){
 	
-	int centreX = center.x;
-	int centreY = center.y;
+	Position center = pixelPosToBoardPos(centerInPixels);
+	PieceColor squareColor = (center.x + center.y) % 2 == 0 ? PieceColor::WHITE : PieceColor::BLACK;
+	string circleFilename = squareColor == PieceColor::WHITE ? IMG_CIRCLES_DIR+"circle_white_square.png" : IMG_CIRCLES_DIR + "circle_black_square.png";
+	SDL_Texture* text = IMG_LoadTexture(rend, circleFilename.c_str());
+	
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-	const int diameter = (radius * 2);
-
-	int x = (radius - 1);
-	int y = 0;
-	int tx = 1;
-	int ty = 1;
-	int error = (tx - diameter);
-
-	while (x >= y)
-	{
-		//  Each of the following renders an octant of the circle
-		SDL_RenderDrawPoint(rend, centreX + x, centreY - y);
-		SDL_RenderDrawPoint(rend, centreX + x, centreY + y);
-		SDL_RenderDrawPoint(rend, centreX - x, centreY - y);
-		SDL_RenderDrawPoint(rend, centreX - x, centreY + y);
-		SDL_RenderDrawPoint(rend, centreX + y, centreY - x);
-		SDL_RenderDrawPoint(rend, centreX + y, centreY + x);
-		SDL_RenderDrawPoint(rend, centreX - y, centreY - x);
-		SDL_RenderDrawPoint(rend, centreX - y, centreY + x);
-
-		if (error <= 0)
-		{
-			++y;
-			error += ty;
-			ty += 2;
-		}
-
-		if (error > 0)
-		{
-			--x;
-			tx += 2;
-			error += (tx - diameter);
-		}
+	if (text == NULL) {
+		std::cout << "couldnt create texture from surface " << std::endl;
+		SDL_DestroyTexture(text);
+		cout << IMG_GetError() << endl;
+		return;
 	}
+
+	SDL_Rect* srcRect = nullptr;
+	SDL_Rect* dstRect = new SDL_Rect{
+		centerInPixels.x - Piece::pieceSize.w / 2,
+		centerInPixels.y - Piece::pieceSize.h / 2,
+		Piece::pieceSize.w,
+		Piece::pieceSize.h
+	};
+	SDL_RenderCopy(rend, text, srcRect, dstRect);
+
+	SDL_DestroyTexture(text);
+	delete srcRect;
+	delete dstRect;
+
+	return;
+
+	// https://stackoverflow.com/questions/38334081/howto-draw-circles-arcs-and-vector-graphics-in-sdl
+	//int centreX = centerInPixels.x;
+	//int centreY = centerInPixels.y;
+
+	//const int diameter = (radius * 2);
+
+	//int x = (radius - 1);
+	//int y = 0;
+	//int tx = 1;
+	//int ty = 1;
+	//int error = (tx - diameter);
+
+	//while (x >= y)
+	//{
+	//	//  Each of the following renders an octant of the circle
+	//	SDL_RenderDrawPoint(rend, centreX + x, centreY - y);
+	//	SDL_RenderDrawPoint(rend, centreX + x, centreY + y);
+	//	SDL_RenderDrawPoint(rend, centreX - x, centreY - y);
+	//	SDL_RenderDrawPoint(rend, centreX - x, centreY + y);
+	//	SDL_RenderDrawPoint(rend, centreX + y, centreY - x);
+	//	SDL_RenderDrawPoint(rend, centreX + y, centreY + x);
+	//	SDL_RenderDrawPoint(rend, centreX - y, centreY - x);
+	//	SDL_RenderDrawPoint(rend, centreX - y, centreY + x);
+
+	//	if (error <= 0)
+	//	{
+	//		++y;
+	//		error += ty;
+	//		ty += 2;
+	//	}
+
+	//	if (error > 0)
+	//	{
+	//		--x;
+	//		tx += 2;
+	//		error += (tx - diameter);
+	//	}
+	//}
 }
 
 void Game::reset() {
@@ -236,19 +294,19 @@ void Game::reset() {
 	colorTurn = PieceColor::WHITE;
 }
 
-Piece* Game::pixelPositionToPiece(const Position pos) {
-	return (pixelPositionToPiece(pos.x, pos.y));
+Piece* Game::pixelPosToPiece(const Position pos) {
+	return (pixelPosToPiece(pos.x, pos.y));
 }
 
-Piece* Game::pixelPositionToPiece(const int& xPosInPixels, const int& yPosInPixels) {
+Piece* Game::pixelPosToPiece(const int& xPosInPixels, const int& yPosInPixels) {
 
 	Position boardPos = Position(xPosInPixels / Piece::pieceSize.w, 
 								   yPosInPixels / Piece::pieceSize.w);
 	
-	return (boardPositionToPiece(boardPos));
+	return (boardPosToPiece(boardPos));
 }
 
-Piece* Game::boardPositionToPiece(const Position boardPos) {
+Piece* Game::boardPosToPiece(const Position boardPos) {
 
 	for (auto e : allPieces) {
 		if (boardPos == e->getCurrPosInBoard()) {
@@ -302,14 +360,25 @@ void Game::handleMouseButtonDown(SDL_Event& event) {
 	int xPosInPixels, yPosInPixels;
 	SDL_GetMouseState(&xPosInPixels, &yPosInPixels);
 
-	currClickedPiece = pixelPositionToPiece(xPosInPixels, yPosInPixels);
+	//Piece* auxClickedPiece = pixelPosToPiece(xPosInPixels, yPosInPixels);
+
+	currClickedPiece = pixelPosToPiece(xPosInPixels, yPosInPixels);
 
 	//only allow current color to be played
 	if (!isYourTurn()) {
 		currClickedPiece = nullptr;
+		clearLegalMoves();
 	}
 	if (currClickedPiece) {
-		renderLegalMoves(currClickedPiece);
+		// if we're already showing, means we clicked again and we want to remove all legal moves from the screen
+		if (showLegalMoves) {
+			clearLegalMoves();
+			return;
+		}
+		calcLegalMoves(currClickedPiece);
+	}
+	else {
+		clearLegalMoves();
 	}
 }
 
@@ -343,13 +412,14 @@ void Game::handleMouseButtonUp(SDL_Event& event) {
 	int xPosInPixels, yPosInPixels;
 	SDL_GetMouseState(&xPosInPixels, &yPosInPixels);
 	Position posInPixels = { xPosInPixels, yPosInPixels };
-	Position boardPos  = { xPosInPixels / Piece::pieceSize.w, yPosInPixels / Piece::pieceSize.h };
+	Position boardPos  = pixelPosToBoardPos(posInPixels);
 
-	Piece* targetPiece = pixelPositionToPiece(posInPixels);
+	Piece* targetPiece = pixelPosToPiece(posInPixels);
 	if (targetPiece) {
 		cout << "target piece is " << targetPiece->getName() << endl;
 	}else{ cout << "target piece is nullptr"<< endl; }
 	
+	cout << "pixelPos before isLegalMove" << posInPixels << endl;
 	cout << "boardPos before isLegalMove" << boardPos << endl;
 	// check legal moves
 	if (!isLegalMove(currClickedPiece, boardPos)) {
@@ -357,6 +427,8 @@ void Game::handleMouseButtonUp(SDL_Event& event) {
 		currClickedPiece->setCurrPosInBoard(currClickedPiece->getCurrPosInBoard());// return to the same position it was in the board
 		shouldChangeTurns = false; // nothing really happened, so don't change turns
 		currClickedPiece = nullptr;
+		targetPiece = nullptr;
+		delete targetPiece;
 		// and then return
 		return;
 	}
@@ -368,13 +440,13 @@ void Game::handleMouseButtonUp(SDL_Event& event) {
 		currClickedPiece->hasBeenMovedOnce = true;
 	}
 	else { // check capture or not
-		if (isDifferentColor(currClickedPiece, targetPiece)) {
+		if (isDifferentColor(currClickedPiece, targetPiece) && pieceCanMakeCaptureMove(currClickedPiece, boardPos)) {
 			// capture
 			cout << "different color pieces" << endl;
 			targetPiece->capturedPieceRoutine();
 			currClickedPiece->setCurrPosInBoard(boardPos);
 			currClickedPiece->hasBeenMovedOnce = true;
-		}
+	}
 		else { 
 			// not a capture
 			cout << "same color pieces" << endl;			
@@ -386,6 +458,8 @@ void Game::handleMouseButtonUp(SDL_Event& event) {
 	currClickedPiece = nullptr;
 	targetPiece = nullptr;
 	delete targetPiece;
+
+	clearLegalMoves(); // stop showing legal moves on the screen
 
 	// change turns;
 	if (shouldChangeTurns) {
@@ -432,7 +506,7 @@ bool Game::isLegalMove(Piece* piece, Position boardPos) {
 
 	cout << "boardPos before piececanmakemove = " << boardPos << endl;
 	// piece has to be able to move to that position
-	if (!pieceCanMakeMove(piece, boardPos)) { cout << piece->getName()<<" can't make move." << endl; return false; }
+	if (!pieceCanMakeMove(piece, boardPos) && !pieceCanMakeCaptureMove(piece, boardPos)) { cout << piece->getName() << " can't make move." << endl; return false; }
 	cout << "pieceCanMakeMove" << endl;
 
 	// make sure no piece is in front of the squares we're moving throught, except for the knight
@@ -440,24 +514,33 @@ bool Game::isLegalMove(Piece* piece, Position boardPos) {
 	cout << "theres NOT APieceBetween, so we're OK" << endl;
 
 	// verify if my own king wont be in check after I move
-	if (!isKingSafeAfterMove(piece, boardPos)) { cout << piece->getColor()<<" King is not safe if you make that move." << endl; return false; }
+	if (!isKingSafeAfterMove(piece, boardPos)) { cout << piece->getColor() << " King is not safe if you make that move." << endl; return false; }
 	cout << "isKingSafeAfterMove" << endl;
 
 	// if there's no piece in the way
-	if (!theresAPieceIn(boardPos)) { cout << "There's NOT a piece between." << endl; return true; }
+	if (!theresAPieceIn(boardPos)) { cout << "There's NOT a piece in " << boardPos << endl; return true; }
 	cout << "there IS APieceIn the final position. Let's check if it's a capture or illegal move" << endl;
 
-	// if there's a piece in the way, but it is of the same color
-	Piece* auxPiece = boardPositionToPiece(boardPos);
+	// if there's a piece in the way, but it is of the same color, we cant move
+	Piece* auxPiece = boardPosToPiece(boardPos);
 
 	if (auxPiece->getColor() == piece->getColor()) {
 		cout << "piece of the same color, cant move!" << endl;
+		auxPiece = nullptr;
+		delete auxPiece;
 		return false;
 	}
 
-	// if nothing else returned, means we have an enemy piece and we can move (to capture it)
-	cout << "isLegalMove !" << endl;
-	return true;
+	auxPiece = nullptr;
+	delete auxPiece;
+
+	// if nothing else returned, means we have an enemy piece. let's check if we are able to capture it or not
+	if (pieceCanMakeCaptureMove(currClickedPiece, boardPos)) {
+		return true;
+	} else {
+		return false;
+	}
+		
 }
 
 bool Game::pieceCanMakeMove(Piece* piece, Position boardPos) {
@@ -470,15 +553,42 @@ bool Game::pieceCanMakeMove(Piece* piece, Position boardPos) {
 	return false;
 }
 
+bool Game::pieceCanMakeCaptureMove(Piece* piece, Position boardPos) {
+	cout << "calculatig ";
+	Piece* auxPiece = nullptr;
+	for (auto& move : piece->calcCaptures()) {
+		
+		cout << move << endl;
+		auxPiece = boardPosToPiece(move);
+		if (auxPiece == nullptr) {
+			continue;
+		}
+		// if there is a enemy piece in that direction
+		if (move == boardPos 
+			&& auxPiece->getCurrPosInBoard() == boardPos
+			&& auxPiece->getColor() != piece->getColor()) {
+			cout << "returning true" << endl;
+			auxPiece = nullptr;
+			delete auxPiece;
+			return true;
+		}
+	}
+	// if we didn't return true before, we can't reach that position
+	cout << "returning false" << endl;
+	auxPiece = nullptr;
+	delete auxPiece;
+	return false;
+}
+
 bool Game::theresAPieceIn(Position boardPos) {
 	
-	Position pixelPos = {
-		boardPos.x * Piece::pieceSize.w,
-		boardPos.y * Piece::pieceSize.h,
-	};
-	Piece*   auxPiece = pixelPositionToPiece(pixelPos);
-
-	return (auxPiece == nullptr ? false : true);
+	Piece*   auxPiece  = boardPosToPiece(boardPos);
+	bool		answer = (auxPiece == nullptr ? false : true);
+	
+	auxPiece = nullptr;
+	delete auxPiece;
+	
+	return answer;
 }
 
 bool Game::theresAPieceBetween(Piece* piece, Position dstPos) {
@@ -627,7 +737,7 @@ bool  Game::isKingSafeAfterMove(Piece* piece, Position dstPos) {
 
 	while (isWithinBoardLimits(auxPos)) {
 		auxPiece = nullptr; // reset it from last iteration
-		auxPiece = boardPositionToPiece(auxPos);
+		auxPiece = boardPosToPiece(auxPos);
 		if (auxPiece) { // there's a piece
 
 			if (auxPiece == piece) {  // if the selected piece is the same that we're trying to move, continue in the loop
@@ -677,5 +787,12 @@ Position Game::pixelPosToBoardPos(Position pixelPos) {
 	return (Position(
 		pixelPos.x / Piece::pieceSize.w,
 		pixelPos.y / Piece::pieceSize.h
+	));
+}
+
+Position Game::boardPosToPixelPos(Position boardPos) {
+	return (Position(
+		boardPos.x * Piece::pieceSize.w,
+		boardPos.y * Piece::pieceSize.h
 	));
 }

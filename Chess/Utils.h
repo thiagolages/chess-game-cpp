@@ -15,8 +15,9 @@ const int CANVAS_WIDTH = 800;
 const int CANVAS_HEIGHT = 800;
 const int horizontalSquares = 8;
 const int verticalSquares = 8;
-const string IMG_PIECES_DIR = "images/pieces/";
-const string IMG_BOARDS_DIR = "images/boards/";
+const string IMG_PIECES_DIR		= "images/pieces/";
+const string IMG_BOARDS_DIR		= "images/boards/";
+const string IMG_CIRCLES_DIR	= "images/circles/";
 
 template<typename Base, typename T>
 inline bool instanceof(const T* ptr) {

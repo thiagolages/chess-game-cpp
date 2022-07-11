@@ -44,6 +44,13 @@ vector<Position> Piece::calcMoves() {
 	return (vec); // return empty vector; will be implemented in derived classes. virtual functions will be implemented later
 }
 
+// for every piece, this is just the same as calcMoves(), except for the pawn, which has its own implementation
+// due to its nature to move and capture on different squares
+vector<Position> Piece::calcCaptures() {
+	cout << "calc captures of other pieces !" << endl;
+	return calcMoves();
+}
+
 //void Piece::move(Position newPos) {
 //	if Game::isWithinBoardLimitsnewPos)) {
 //		setCurrPosInBoard(newPos);

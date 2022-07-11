@@ -56,6 +56,7 @@ public:
 	Position getInitialPosInBoard();
 	void capturedPieceRoutine();
 	virtual vector<Position> calcMoves() = 0; // derived classes must provide implementation
+	virtual vector<Position> calcCaptures(); // for every piece except the pawn, this is just the same as calcMoves()
 	//void move(Position newPos);
 
 public:

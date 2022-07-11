@@ -50,5 +50,21 @@ vector<Position> Pawn::calcMoves() {
 	if (!hasBeenMovedOnce) {
 		if (isWithinBoardLimits(curr.x, curr.y + dy * 2))vec.push_back(Position(curr.x, curr.y + dy*2));
 	}
+
+	return vec;
+}
+
+vector<Position> Pawn::calcCaptures() {
+
+	cout << "calc captures of pawn !" << endl;
+	vector<Position> vec;
+
+	Position curr = getCurrPosInBoard();
+	// moving up (white) or down (black) the board
+	int dy = (getColor() == PieceColor::WHITE ? -1 : 1);
+	// capture move
+	if (isWithinBoardLimits(curr.x - 1, curr.y + dy))vec.push_back(Position(curr.x - 1, curr.y + dy));
+	if (isWithinBoardLimits(curr.x + 1, curr.y + dy))vec.push_back(Position(curr.x + 1, curr.y + dy));
+	
 	return vec;
 }
